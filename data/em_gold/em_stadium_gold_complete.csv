@@ -1,0 +1,94 @@
+index,Player,Position,Team,Facility,Capacity,Location,Opened
+0,Tom Brady,QB,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+1,Tristan Wirfs,OT,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+2,Mike Evans,WR,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+3,Devin White,LB,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+4,Antoine Winfield Jr.,S,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+5,Shaquil Barrett,LB,Buccaneers,Raymond James Stadium,"65,890","Tampa, Florida",1998
+6,Aaron Rodgers,QB,Packers,Lambeau Field,"81,441","Green Bay, Wisconsin",1957
+7,De'Vondre Campbell,LB,Packers,Lambeau Field,"81,441","Green Bay, Wisconsin",1957
+8,Jonathan Taylor,RB,Colts,Lucas Oil Stadium,"67,000","Indianapolis, Indiana",2008
+9,Shaquille Leonard,LB,Colts,Lucas Oil Stadium,"67,000","Indianapolis, Indiana",2008
+10,Quenton Nelson,G,Colts,Lucas Oil Stadium,"67,000","Indianapolis, Indiana",2008
+11,DeForest Buckner,DT,Colts,Lucas Oil Stadium,"67,000","Indianapolis, Indiana",2008
+12,Kenny Moore II,CB,Colts,Lucas Oil Stadium,"67,000","Indianapolis, Indiana",2008
+13,T.J. Watt,LB,Steelers,Heinz Field,"68,400","Pittsburgh, Pennsylvania",2001
+14,Cameron Heyward,DE,Steelers,Heinz Field,"68,400","Pittsburgh, Pennsylvania",2001
+15,Davante Adams,WR,Raiders,Allegiant Stadium,"65,000","Paradise, Nevada",2020
+16,Darren Waller,TE,Raiders,Allegiant Stadium,"65,000","Paradise, Nevada",2020
+17,Maxx Crosby,DE,Raiders,Allegiant Stadium,"65,000","Paradise, Nevada",2020
+18,Chandler Jones,DE,Raiders,Allegiant Stadium,"65,000","Paradise, Nevada",2020
+19,Derek Carr,QB,Raiders,Allegiant Stadium,"65,000","Paradise, Nevada",2020
+20,Patrick Mahomes II,QB,Chiefs,Arrowhead Stadium,"76,416","Kansas City, Missouri",1972
+21,Travis Kelce,TE,Chiefs,Arrowhead Stadium,"76,416","Kansas City, Missouri",1972
+22,Chris Jones,DE,Chiefs,Arrowhead Stadium,"76,416","Kansas City, Missouri",1972
+23,Myles Garrett,DE,Browns,FirstEnergy Stadium,"67,895","Cleveland, Ohio",1999
+24,Nick Chubb,RB,Browns,FirstEnergy Stadium,"67,895","Cleveland, Ohio",1999
+25,Joel Bitonio,G,Browns,FirstEnergy Stadium,"67,895","Cleveland, Ohio",1999
+26,Wyatt Teller,G,Browns,FirstEnergy Stadium,"67,895","Cleveland, Ohio",1999
+27,Denzel Ward,CB,Browns,FirstEnergy Stadium,"67,895","Cleveland, Ohio",1999
+28,Derrick Henry,RB,Titans,Nissan Stadium,"69,143","Nashville, Tennessee",1999
+29,Kevin Byard,S,Titans,Nissan Stadium,"69,143","Nashville, Tennessee",1999
+30,Jeffery Simmons,DT,Titans,Nissan Stadium,"69,143","Nashville, Tennessee",1999
+31,Josh Allen,QB,Bills,Bills Stadium,"71,608","Orchard Park, New York",1973
+32,Stefon Diggs,WR,Bills,Bills Stadium,"71,608","Orchard Park, New York",1973
+33,Jordan Poyer,S,Bills,Bills Stadium,"71,608","Orchard Park, New York",1973
+34,Micah Hyde,S,Bills,Bills Stadium,"71,608","Orchard Park, New York",1973
+35,Von Miller,LB,Bills,Bills Stadium,"71,608","Orchard Park, New York",1973
+36,Trent Williams,OT,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+37,Deebo Samuel,WR,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+38,George Kittle,TE,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+39,Nick Bosa,DE,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+40,Fred Warner,LB,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+41,Jimmie Ward,S,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+42,Kyle Juszczyk,FB,49ers,Levi's Stadium,"68,500","Santa Clara, California",2014
+43,Tyreek Hill,WR,Dolphins,Hard Rock Stadium,"65,326","Miami Gardens, Florida",1987
+44,Xavien Howard,CB,Dolphins,Hard Rock Stadium,"65,326","Miami Gardens, Florida",1987
+45,Jaylen Waddle,WR,Dolphins,Hard Rock Stadium,"65,326","Miami Gardens, Florida",1987
+46,Micah Parsons,LB,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+47,Trevon Diggs,CB,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+48,Dak Prescott,QB,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+49,Zack Martin,G,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+50,Tyron Smith,OT,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+51,CeeDee Lamb,WR,Cowboys,AT&T Stadium,"80,000","Arlington, Texas",2009
+52,Justin Jefferson,WR,Vikings,U.S. Bank Stadium,"66,655","Minneapolis, Minnesota",2016
+53,Dalvin Cook,RB,Vikings,U.S. Bank Stadium,"66,655","Minneapolis, Minnesota",2016
+54,Kirk Cousins,QB,Vikings,U.S. Bank Stadium,"66,655","Minneapolis, Minnesota",2016
+55,J.C. Jackson,CB,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+56,Joey Bosa,LB,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+57,Keenan Allen,WR,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+58,Justin Herbert,QB,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+59,Derwin James,S,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+60,Austin Ekeler,RB,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+61,Corey Linsley,C,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+62,Rashawn Slater,OT,Chargers,SoFi Stadium,"70,240","Inglewood, California",2020
+63,Joe Burrow,QB,Bengals,Paul Brown Stadium,"65,515","Cincinnati, Ohio",2000
+64,Ja'Marr Chase,WR,Bengals,Paul Brown Stadium,"65,515","Cincinnati, Ohio",2000
+65,Joe Mixon,RB,Bengals,Paul Brown Stadium,"65,515","Cincinnati, Ohio",2000
+66,Trey Hendrickson,DE,Bengals,Paul Brown Stadium,"65,515","Cincinnati, Ohio",2000
+67,Mark Andrews,TE,Ravens,M&T Bank Stadium,"71,008","Baltimore, Maryland",1998
+68,Lamar Jackson,QB,Ravens,M&T Bank Stadium,"71,008","Baltimore, Maryland",1998
+69,Justin Tucker,K,Ravens,M&T Bank Stadium,"71,008","Baltimore, Maryland",1998
+70,DeAndre Hopkins,WR,Cardinals,State Farm Stadium,"63,400","Glendale, Arizona",2006
+71,Kyler Murray,QB,Cardinals,State Farm Stadium,"63,400","Glendale, Arizona",2006
+72,Budda Baker,S,Cardinals,State Farm Stadium,"63,400","Glendale, Arizona",2006
+73,James Conner,RB,Cardinals,State Farm Stadium,"63,400","Glendale, Arizona",2006
+74,Robert Quinn DE,,Bears,Soldier Field,"61,500","Chicago, Illinois",1924[nb 1]
+75,Roquan Smith,LB,Bears,Soldier Field,"61,500","Chicago, Illinois",1924[nb 1]
+76,David Montgomery,RB,Bears,Soldier Field,"61,500","Chicago, Illinois",1924[nb 1]
+77,Alvin Kamara,RB,Saints,Mercedes-Benz Superdome,"73,208","New Orleans, Louisiana",1975
+78,Cameron Jordan,DE,Saints,Mercedes-Benz Superdome,"73,208","New Orleans, Louisiana",1975
+79,Tyrann Mathieu,S,Saints,Mercedes-Benz Superdome,"73,208","New Orleans, Louisiana",1975
+80,Demario Davis,LB,Saints,Mercedes-Benz Superdome,"73,208","New Orleans, Louisiana",1975
+81,Marshon Lattimore,CB,Saints,Mercedes-Benz Superdome,"73,208","New Orleans, Louisiana",1975
+82,Matthew Judon,LB,Patriots,Gillette Stadium,"66,829","Foxborough, Massachusetts",2002
+83,Mac Jones,QB,Patriots,Gillette Stadium,"66,829","Foxborough, Massachusetts",2002
+84,Russell Wilson,QB,Broncos,Empower Field at Mile High,"76,125","Denver, Colorado",2001
+85,Justin Simmons,S,Broncos,Empower Field at Mile High,"76,125","Denver, Colorado",2001
+86,Jason Kelce,C,Eagles,Lincoln Financial Field,"69,596","Philadelphia, Pennsylvania",2003
+87,Darius Slay,CB,Eagles,Lincoln Financial Field,"69,596","Philadelphia, Pennsylvania",2003
+88,Quandre Diggs,S,Seahawks,Lumen Field,"69,000","Seattle, Washington",2002
+89,Cordarrelle Patterson,RB,Falcons,Mercedes-Benz Stadium,"71,000","Atlanta, Georgia",2017
+90,Kyle Pitts,TE,Falcons,Mercedes-Benz Stadium,"71,000","Atlanta, Georgia",2017
+91,Brian Burns,DE,Panthers,Bank of America Stadium,"75,523","Charlotte, North Carolina",1996
+92,Jonathan Allen,DT,Commanders,FedExField,"82,000","Landover, Maryland",1997
