@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+{% include 'partials/header.html' %}
+
+</head>
+<body>
+{% include 'partials/navigation.html' %}
+  <!-- Page Content -->
+  <div class="container-fluid">
+    <h3 style="text-align: center;">DIALITE: Discover, Align and Integrate Open Data Tables</h3>
+    <hr>
+      <div id="notification"></div>
+      <div id="initial_container">
+        <div class="row">
+        <div class="col-md-2 col-sm-2 col-lg-2"></div>
+        <div class="col-md-8 col-sm-8 col-lg-8">
+        <p style="text-align: justify;"> Abstract: We demonstrate a novel table discovery pipeline called DIALITE that allows users to discover, integrate and analyze open data tables. DIALITE has three main stages. First, it allows users to discover tables from open data platforms using state-of-the-art table discovery techniques. Second, DIALITE integrates the discovered tables to produce an integrated table. Finally, it allows users to analyze the integration result by applying different downstreaming tasks over it. Our pipeline has a flexible architecture such that the user can easily add and compare additional discovery and integration algorithms.</p>
+        </div>
+        <div class="col-md-2 col-sm-2 col-lg-2"></div>
+        </div>
+      </div>
+      <div class="row">
+      <div class="col-md-2 col-sm-2 col-lg-2"></div>
+      <div class="col-md-8 col-sm-8 col-lg-8">
+        <div id="upload_query_div" class="display_options">
+          <h3 style="text-align:center;">Add Query Table</h3><br>
+            <form enctype="multipart/form-data">
+              <!-- <div class="row form-group">
+                <div class="col-md-4">
+                  <label>Name query table</label>
+                </div>
+                <div class="col-md-8">
+                <input type="text" name="upload_query_name" class="form-control" id="upload_query_name" placeholder="Enter table name without extension." required>
+                </div>
+              </div> -->
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label>Select Table</label>
+                </div>
+                <div class="col-md-8">
+                  <input type="file" name="query_table" id="query_table" accept=".csv" required>
+                </div>
+                </div>
+                <button class="btn btn-success form-control" name = "upload_query" id="upload_query">Upload Table</button>
+            </form>
+        </div>
+        <div id="generate_query_div" class="display_options">
+          <form method="post" action="generate_query" enctype="multipart/form-data">
+            <div class="form-group">
+            <h3 style="text-align:center;">Generate Query table</h3>
+            <p>Enter a prompt to generate Query table.</p>
+            <textarea rows="3" id="query_prompt" name="query_prompt" class="form-control" style="resize:null" required></textarea><br>
+            <input type="submit" class="btn btn-success form-control" value="Generate Query Table">
+            </div>
+          </form>
+        </div>
+        <div id="discover_table_div" class="display_options">
+          <h3 style="text-align:center;">Discover Tables</h3>
+          <form method="post" action="discover" enctype="multipart/form-data">
+            <div class="row form-group">
+              <div class="col-md-4">
+                <label for="dropdown">Select Query Table:</label>
+              </div>
+              <div class="col-md-8">
+                <select id="discover_query" class = "form-control" name="discover_query">
+                  <option value="covid19">covid19.csv</option>
+                  <option value="mayors">mayors.csv</option>
+                  <option value="players">players.csv</option>
+                </select>
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-4">
+                <label for="select">Select Discovery Methods:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="checkbox" id="santos" name="discovery_method" value="SANTOS"> SANTOS&nbsp
+                <input type="checkbox" id="josie" name="discovery_method" value="JOSIE"> JOSIE
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-4">
+                <label for="number">Select k:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="number" class = "form-control" id="number" name="number" min="1" step="1" value="1">
+              </div>
+            </div>
+            <input type="submit" class ="form-control btn-success" value="Search Tables">
+          </form>
+        </div>
+        <div id="integrate_table_div" class="display_options">
+            <h3 style="text-align:center;">Integrate Tables</h3>
+            <form method="post" action="discover" enctype="multipart/form-data">
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label for="dropdown">Select Integration set:</label>
+                </div>
+                <div class="col-md-8">
+                  <select id="dropdown" class = "form-control" name="dropdown">
+                    <option value="option1">covid19</option>
+                    <option value="option2">mayors</option>
+                    <option value="option3">players</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label for="select">Select Methods:</label>
+                </div>
+                <div class="col-md-8">
+                  <input type="checkbox" id="alite" name="integration_method" value="ALITE"> ALITE&nbsp
+                  <input type="checkbox" id="outer_join" name="integration_method" value="OUTER"> Outer Join
+                </div>
+              </div>
+              <input type="submit" class ="form-control btn-success" value="Search Tables">
+            </form>
+        </div>
+      <hr>
+      {% include 'partials/footer.html' %}
+    
+      <script>
+        $(document).ready(function() {
+          $('#upload_query').click(function(e) {
+            e.preventDefault();
+            var file_data = $('#query_table').prop('files')[0];
+            if (!file_data) {
+                alert('Please select a file to upload');
+                return;
+            }
+            var form_data = new FormData();
+            form_data.append('query_table', file_data);
+            $.ajax({
+                url: '/upload_query',
+                type: 'POST',
+                data: form_data,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                  if (response.success) {
+                      $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
+                  } else {
+                      $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');
+                  }
+                  $('#query_table').val('')
+              },
+              error: function(xhr, status, error) {
+                  $('#notification').html('<p style="color:red; text-align:center;">' + xhr.responseText + '</p>');
+                  $('#query_table').val('')
+                }
+            });
+            });
+        });
+      </script>
+  </body>
+</html>
