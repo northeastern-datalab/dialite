@@ -62,7 +62,7 @@
             </div>
           </form>
           <div id="generating_table" style="display:none;">
-            Generating Table. Please wait!!!
+            <p style="text-align: center; color: blue;">Generating Table. Please wait!!!</p>
           </div>
           <div id="generated_table"></div>
         </div>
@@ -173,6 +173,8 @@
             }
             var generating_table = document.getElementById("generating_table");
             generating_table.style.display = "block";
+            var generated_table = document.getElementById("generated_table");
+            generated_table.hide();
             var form_data = new FormData();
             form_data.append('generated_query_name', generated_query_name);
             form_data.append('query_prompt', query_prompt);
@@ -191,14 +193,13 @@
                 } else {
                     $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');
                 }
-                $('#query_prompt').val('')
             },
             error: function(xhr, status, error) {
-                var generating_table = document.getElementById("generating_table");
-                generating_table.style.display = "none";
                 $('#notification').html('<p style="color:red; text-align:center;">' + xhr.responseText + '</p>');
               }
             });
+            var generating_table = document.getElementById("generating_table");
+            generating_table.style.display = "none";
           });
         });
       </script>
