@@ -46,14 +46,25 @@
             </form>
         </div>
         <div id="generate_query_div" class="display_options">
-          <form method="post" action="generate_query" enctype="multipart/form-data">
-            <div class="form-group">
-            <h3 style="text-align:center;">Generate Query table</h3>
-            <p>Enter a prompt to generate Query table.</p>
-            <textarea rows="3" id="query_prompt" name="query_prompt" class="form-control" style="resize:null" required></textarea><br>
-            <input type="submit" class="btn btn-success form-control" value="Generate Query Table">
+          <h3 style="text-align:center;">Generate Query table</h3>
+          <form>
+            <div class="row form-group">
+                <div class="col-md-4">
+                  <label>Name query table</label>
+                </div>
+                <div class="col-md-8">
+                <input type="text" name="generated_query_name" class="form-control" id="generated_query_name" placeholder="Enter table name without extension." required>
+                </div>
+            </div>
+            <div class="row form-group">
+              <textarea rows="3" id="query_prompt" placeholder="Enter a prompt to generate Query table." name="query_prompt" class="form-control" style="resize:null" required></textarea>
+              <button id="submit_prompt" class="btn btn-success form-control">Generate Query Table</button>
             </div>
           </form>
+          <div id="generating_table" style="display:none;">
+            Generating Table. Please wait!!!
+          </div>
+          <div id="generated_table"></div>
         </div>
         <div id="discover_table_div" class="display_options">
           <h3 style="text-align:center;">Discover Tables</h3>
@@ -151,6 +162,44 @@
                 }
             });
             });
+
+          $('#submit_prompt').click(function(e){
+            e.preventDefault();
+            var query_prompt = $('#query_prompt').val();
+            var generated_query_name = $("#generated_query_name").val();
+            if (!query_prompt || !generated_query_name) {
+                alert('Please enter table name and a prompt to generate query table');
+                return;
+            }
+            var generating_table = document.getElementById("generating_table");
+            generating_table.style.display = "block";
+            var form_data = new FormData();
+            form_data.append('generated_query_name', generated_query_name);
+            form_data.append('query_prompt', query_prompt);
+            $.ajax({
+              url: '/generate_query',
+              type: 'POST',
+              data: form_data,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+                if (response.success) {
+                    $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
+                    var generating_table = document.getElementById("generating_table");
+                    generating_table.style.display = "none";
+                    $('#generated_table').html(response.table)
+                } else {
+                    $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');
+                }
+                $('#query_prompt').val('')
+            },
+            error: function(xhr, status, error) {
+                var generating_table = document.getElementById("generating_table");
+                generating_table.style.display = "none";
+                $('#notification').html('<p style="color:red; text-align:center;">' + xhr.responseText + '</p>');
+              }
+            });
+          });
         });
       </script>
   </body>
