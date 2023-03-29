@@ -75,9 +75,12 @@
               </div>
               <div class="col-md-8">
                 <select id="discover_query" class = "form-control" name="discover_query">
-                  <option value="covid19">covid19.csv</option>
+                  {% for table in query_tables %}
+                    <option value="{{table}}">{{table}}</option>
+                  {% endfor %}
+                  <!-- <option value="covid19">covid19.csv</option>
                   <option value="mayors">mayors.csv</option>
-                  <option value="players">players.csv</option>
+                  <option value="players">players.csv</option> -->
                 </select>
               </div>
             </div>
@@ -106,13 +109,16 @@
             <form method="post" action="discover" enctype="multipart/form-data">
               <div class="row form-group">
                 <div class="col-md-4">
-                  <label for="dropdown">Select Integration set:</label>
+                  <label>Select Integration set:</label>
                 </div>
                 <div class="col-md-8">
-                  <select id="dropdown" class = "form-control" name="dropdown">
-                    <option value="option1">covid19</option>
+                  <select id="select_integration_sets" class = "form-control" name="select_integration_sets">
+                    {% for set in integration_sets %}
+                      <option value="{{set}}">{{set}}</option>
+                    {% endfor %}
+                    <!-- <option value="option1">covid19</option>
                     <option value="option2">mayors</option>
-                    <option value="option3">players</option>
+                    <option value="option3">players</option> -->
                   </select>
                 </div>
               </div>
@@ -171,10 +177,9 @@
                 alert('Please enter table name and a prompt to generate query table');
                 return;
             }
+            document.getElementById("generated_table").innerHTML = "";
             var generating_table = document.getElementById("generating_table");
             generating_table.style.display = "block";
-            var generated_table = document.getElementById("generated_table");
-            generated_table.hide();
             var form_data = new FormData();
             form_data.append('generated_query_name', generated_query_name);
             form_data.append('query_prompt', query_prompt);
@@ -187,8 +192,6 @@
               success: function(response) {
                 if (response.success) {
                     $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
-                    var generating_table = document.getElementById("generating_table");
-                    generating_table.style.display = "none";
                     $('#generated_table').html(response.table)
                 } else {
                     $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');

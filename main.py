@@ -3,12 +3,12 @@ import pandas as pd
 import csv
 import os
 import openai
+import glob
 
 app = Flask(__name__)
 
 def QueryGPT3(prompt):
-    #openai.api_key = "OPENAI_API_KEY"
-    openai.api_key = "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"
+    openai.api_key = "OPENAI_API_KEY"
     response = openai.Completion.create(
     model="text-davinci-003",
     prompt=prompt,
@@ -37,8 +37,27 @@ def ConvertTextToTable(text):
     return df
 
 @app.route("/")
-def index():    
-    return render_template('index.html')
+def index():   
+    query_tables = glob.glob(r"data"+os.sep+"query"+os.sep+"*")
+    query_tables = [query.rsplit(os.sep,1)[-1] for query in query_tables]
+    integration_sets = glob.glob(r"data"+os.sep+"integration-set"+os.sep+"*")
+    integration_sets = [integration_set.rsplit(os.sep,1)[-1] for integration_set in integration_sets]
+    return render_template('index.html', query_tables = query_tables, integration_sets = integration_sets)
+
+@app.route('/update_available_query')
+def update_available_query():
+    query_tables = glob.glob(r"data"+os.sep+"query"+os.sep+"*")
+    query_tables = [query.rsplit(os.sep,1)[-1] for query in query_tables]
+    # Return the updated my_list variable as a JSON response
+    return jsonify(query_tables=query_tables)
+
+@app.route('/update_integration_sets')
+def update_integration_sets():
+    integration_sets = glob.glob(r"data"+os.sep+"integration-set"+os.sep+"*")
+    integration_sets = [integration_set.rsplit(os.sep,1)[-1] for integration_set in integration_sets]
+    # Return the updated my_list variable as a JSON response
+    return jsonify(integration_sets=integration_sets)
+
 
 @app.route("/upload_query", methods=["POST"])
 def upload_table():
@@ -85,5 +104,9 @@ def generate_table():
         return jsonify({'success': True, 'message': message, 'table': table_sample.to_html()})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e), 'table':"Table not generated"})
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

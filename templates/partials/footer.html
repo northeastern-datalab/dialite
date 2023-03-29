@@ -1,12 +1,12 @@
 <div style="text-align: center;">
     <button class="btn" onclick="ShowDiv('upload_query_div')">Upload Query</button>&nbsp
     <button class="btn" onclick="ShowDiv('generate_query_div')">Generate Query</button>&nbsp
-    <button class="btn" onclick="ShowDiv('discover_table_div')">Discover</button>&nbsp
-    <button class="btn" onclick="ShowDiv('integrate_table_div')">Integrate</button>&nbsp<br>
+    <button class="btn" onclick="UpdateAvailableQuery(); ShowDiv('discover_table_div');">Discover</button>&nbsp
+    <button class="btn" onclick="UpdateIntegrationSets(); ShowDiv('integrate_table_div')">Integrate</button>&nbsp<br>
   </div>
   <div style="text-align: center;">
     <p style="text-align: center;">Here is a demonstration video of the system.</p><br>
-   <!-- <iframe src="https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/preview" width="600" height="300" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+   <iframe src="https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/preview" width="600" height="300" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
   </div>
 
@@ -22,6 +22,7 @@
 <script>
 function ShowDiv(divId) {
   // Hide all containers
+  $('#notification').html('');
   var initial = document.getElementById("initial_container")
   initial.style.display = "none";
   var containers = document.getElementsByClassName("display_options");
@@ -32,5 +33,59 @@ function ShowDiv(divId) {
   // Show the selected container
   var selectedDiv = document.getElementById(divId);
   selectedDiv.style.display = "block";
+}
+
+  // Function to update the options of the select input element
+  function updateSelectOptions(data, type) {
+    // Get the select input element
+    if (type == "update_query") {
+      var selectEl = $("#discover_query");
+      // Clear the current options
+      selectEl.empty();
+      // Add each item in the list as an option
+      data.forEach(function(item) {
+      selectEl.append("<option value='" + item + "'>" + item + "</option>");
+    });
+    }
+    else if (type == "update_integration_sets"){
+      var selectE2 = $("#select_integration_sets");
+      console.log(selectE2);
+      // Clear the current options
+      selectE2.empty();
+      // Add each item in the list as an option
+      data.forEach(function(item) {
+        selectE2.append("<option value='" + item + "'>" + item + "</option>");
+    });
+    }    
+  }
+
+function UpdateAvailableQuery() {
+  console.log("Updated query");
+  $.ajax({
+    url: '/update_available_query',
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+      updateSelectOptions(response.query_tables, "update_query");
+    },
+    error: function(xhr) {
+      console.log("Error:", xhr.responseText);
+    }
+  });
+}
+
+function UpdateIntegrationSets() {
+  console.log("Updated integration sets.")
+  $.ajax({
+    url: '/update_integration_sets',
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+      updateSelectOptions(response.integration_sets, "update_integration_sets");
+    },
+    error: function(xhr) {
+      console.log("Error:", xhr.responseText);
+    }
+  });
 }
 </script>
