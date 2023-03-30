@@ -115,7 +115,8 @@ def new_outer_join_integration_algorithm(integration_set):
 def analyze_er(integrated_table):
     # We use py entitymatching package to run the entity resolution algorithm.
     # Currently, we have not integrated the API. So we show the results of applying er using py entitymatching
-    # manually. These number are also reported in the full ALITE paper.
+    # manually. These number are generated from entitymatching package separetely and 
+    # are also reported in the full ALITE paper.
     # The related notebook is available in this github repo with name: analyze_entity_resolution.ipynb
     if integrated_table.shape[0] > 115 :
         print("Precision: 0.795")
