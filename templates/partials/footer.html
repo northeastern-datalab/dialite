@@ -15,7 +15,7 @@
   <div></div>
 </div><!-- end container -->
  <!-- Add an attractive Bootstrap footer -->
- <footer class="bg-light">
+ <footer>
   <hr>
   <div class="container">
         <p>Related Paper: Aamod Khatiwada, Roee Shraga, and Renée J. Miller. DIALITE: Discover, Align and Integrate Open Data Tables. In SIGMOD-Companion 2023, ACM.
@@ -48,20 +48,22 @@ function ShowDiv(divId) {
   function updateSelectOptions(data, type) {
     // Get the select input element
     if (type == "update_query") {
-      var selectEl = $("#discover_query");
+      let selectEl = $("#discover_query");
       // Clear the current options
       selectEl.empty();
       // Add each item in the list as an option
+      selectEl.append("<option selected disabled>--Select Query Table--</option>");
       data.forEach(function(item) {
       selectEl.append("<option value='" + item + "'>" + item + "</option>");
     });
     }
     else if (type == "update_integration_sets"){
-      var selectE2 = $("#select_integration_sets");
-      console.log(selectE2);
+      let selectE2 = $("#select_integration_sets");
+      //console.log(selectE2);
       // Clear the current options
       selectE2.empty();
       // Add each item in the list as an option
+      selectE2.append("<option selected disabled>--Select Integration Set--</option>");
       data.forEach(function(item) {
         selectE2.append("<option value='" + item + "'>" + item + "</option>");
     });
@@ -69,7 +71,7 @@ function ShowDiv(divId) {
   }
 
 function UpdateAvailableQuery() {
-  console.log("Updated query");
+  //console.log("Updated query");
   $.ajax({
     url: '/update_available_query',
     type: 'GET',
@@ -84,7 +86,7 @@ function UpdateAvailableQuery() {
 }
 
 function UpdateIntegrationSets() {
-  console.log("Updated integration sets.")
+  //console.log("Updated integration sets.")
   $.ajax({
     url: '/update_integration_sets',
     type: 'GET',
