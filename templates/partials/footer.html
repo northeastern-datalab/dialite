@@ -71,6 +71,7 @@ function ShowDiv(divId) {
   }
 
 function UpdateAvailableQuery() {
+  document.getElementById("current_query_table").innerHTML = "";
   //console.log("Updated query");
   $.ajax({
     url: '/update_available_query',

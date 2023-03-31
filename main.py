@@ -419,7 +419,7 @@ def discover_tables():
         os.makedirs(integration_set_path)
     #else clean it before adding new tables after discovery.
     query_table = pd.read_csv(query_table_path, encoding="latin-1", on_bad_lines="skip")
-    return['a','b',query_table_name]
+    return ['a','b',query_table_name]
     algorithm = request.form.getlist('discovery_method')
     if "SANTOS" in algorithm:
         print("Enter index of intent column:")
