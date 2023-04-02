@@ -111,7 +111,7 @@ def find_string_cols(df):
     return string_cols
 
 def query_santos(query_table, intent_column, k):
-    query_table = pd.read_csv(query_table, encoding='latin1', on_bad_lines="skip")
+    #query_table = pd.read_csv(query_table, encoding='latin1', on_bad_lines="skip")
     entity_finding_relations, relation_dependencies, relation_dictionary = santos.computeRelationSemantics(query_table, intent_column, label_dict, fact_dict)
     column_dictionary, subject_semantics = santos.computeColumnSemantics(query_table, intent_column, label_dict, type_dict, class_dict, entity_finding_relations)
     synthetic_triples_dictionary, synth_subject_semantics = santos.computeSynthRelation(query_table, intent_column, synth_relation_kb)
