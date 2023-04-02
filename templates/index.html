@@ -102,7 +102,10 @@
                 <label for="intent_column">Select search column index:</label>
               </div>
               <div class="col-md-8">
-                <input type="number" class = "form-control" id="intent_column" name="intent_column" min="0" step="1" value="0" required>
+                <select id="intent_column" class = "form-control" name="intent_column" required>
+                  <option disabled selected>--First Select Query Table--</option>
+                </select>
+                <!-- <input type="number" class = "form-control" id="intent_column" name="intent_column" min="0" step="1" value="0" required> -->
               </div>
             </div>
             <div class="row form-group">
@@ -227,7 +230,14 @@
             });
             
           });
-          
+          $('#intent_column').on('change', function() {
+            let selectOption = document.getElementById("intent_column");
+            let selectedColumn = selectOption.options[selectOption.selectedIndex].text;
+            //console.log(selectedColumn);
+            $('th, td').removeClass('highlight');
+            $('th:contains(' + selectedColumn + '), td:nth-child(' + ($('th:contains(' + selectedColumn + ')').index() + 1) + ')').addClass('highlight');
+            //$('th:contains(' + selectedColumn + ')').addClass('highlight');
+          });
           $('#discover_query').on('change', function() {
             // Get selected table name
             let discover_query = document.getElementById("discover_query").value;
@@ -242,8 +252,14 @@
               data: form_data,
               success: function(response) {
                 // Generate HTML table from DataFrame and replace current table in HTML
+                //console.log(response.table);
                 $('#current_query_table').html('<br><h3 style="text-align:center; color:blue;">Selected Query Table:</h3><br>'+ response.table);
                 $('#current_query_table').css("maxHeight", "300px");
+                var options = "<option disabled selected>--Select Column--</option> "
+                $.each(response.options, function(key, value) {
+                  options += "<option value = '" + value.value + "'>" + value.text + "</option>";
+                });
+                $("#intent_column").html(options);
               }
             });
           });
@@ -268,12 +284,18 @@
               alert('K must be a positive integers greater than 0.');
               return;
             }
+            
+            // validate query table input
+            if ($('#intent_column').val() == '') {
+              alert('Please select a Search Column.');
+              return;
+            }
 
             // validate intent column input
-            if ($('#intent_column').val() < 0) {
-              alert('Intent column index must be 0 or a positive integer.');
-              return;
-            }            
+            // if ($('#intent_column').val() < 0) {
+            //  alert('Intent column index must be 0 or a positive integer.');
+            //  return;
+            // }            
             
             document.getElementById("searched_tables").innerHTML = "";
             var show_searching_table = document.getElementById("searching_table");
@@ -283,6 +305,7 @@
               type: 'POST',
               data: $('#discover_tables_form').serialize(),
               success: function(response) {
+                console.log(response);
                 if (response.success) {
                     $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                     $('#searched_tables').html(response.table);

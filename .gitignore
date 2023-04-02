@@ -55,6 +55,7 @@ coverage.xml
 *.mo
 *.pot
 *.pickle
+*.pbz2
 
 # Django stuff:
 *.log

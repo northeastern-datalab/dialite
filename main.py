@@ -9,6 +9,7 @@ import pickle, bz2
 import _pickle as cPickle
 import json
 import sys
+import stat
 import santos.codes as santos
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
@@ -102,12 +103,19 @@ def find_first_string_col(df):
             return i
     return 0
 
+def find_string_cols(df):
+    string_cols = []
+    for i, col in enumerate(df.columns):
+        if df[col].apply(lambda x: isinstance(x, str)).sum() / len(df) >= 0.75:
+            string_cols.append({'value': i, 'text': col})
+    return string_cols
+
 def query_santos(query_table, intent_column, k):
-    input_table = pd.read_csv(query_table, encoding='latin1', on_bad_lines="skip")
-    entity_finding_relations, relation_dependencies, relation_dictionary = santos.computeRelationSemantics(input_table, intent_column, label_dict, fact_dict)
-    column_dictionary, subject_semantics = santos.computeColumnSemantics(input_table, intent_column, label_dict, type_dict, class_dict, entity_finding_relations)
-    synthetic_triples_dictionary, synth_subject_semantics = santos.computeSynthRelation(input_table, intent_column, synth_relation_kb)
-    synthetic_column_dictionary = santos.computeSynthColumnSemantics(input_table, synth_type_kb)
+    query_table = pd.read_csv(query_table, encoding='latin1', on_bad_lines="skip")
+    entity_finding_relations, relation_dependencies, relation_dictionary = santos.computeRelationSemantics(query_table, intent_column, label_dict, fact_dict)
+    column_dictionary, subject_semantics = santos.computeColumnSemantics(query_table, intent_column, label_dict, type_dict, class_dict, entity_finding_relations)
+    synthetic_triples_dictionary, synth_subject_semantics = santos.computeSynthRelation(query_table, intent_column, synth_relation_kb)
+    synthetic_column_dictionary = santos.computeSynthColumnSemantics(query_table, synth_type_kb)
     current_relations = set()
     for item in relation_dependencies:    
         current_relations.add(item)
@@ -306,7 +314,7 @@ def query_santos(query_table, intent_column, k):
     return sortedTableList
 
 
-# @app.before_first_request
+@app.before_first_request
 def load_dictionaries():
     global label_dict, type_dict, class_dict, fact_dict
     global yago_inverted_index, yago_relation_index, main_index_triples
@@ -414,38 +422,48 @@ def generate_table():
 def discover_tables():
     query_table_name = request.form['discover_query']
     query_table_path = app.config['query_table_folder'] + os.sep + query_table_name
-    integration_set_path = app.config['integration_set_folder'] + os.sep + query_table_name.rsplit("/",1)[-1]
-    if not os.path.exists(integration_set_path):
-        os.makedirs(integration_set_path)
-    #else clean it before adding new tables after discovery.
+    integration_set_path = app.config['integration_set_folder'] + os.sep + query_table_name.rsplit(".",1)[0]
     query_table = pd.read_csv(query_table_path, encoding="latin-1", on_bad_lines="skip")
-    return ['a','b',query_table_name]
+    if not os.path.exists(integration_set_path):
+        os.makedirs(integration_set_path, mode=0o777)
+        query_table.to_csv(integration_set_path+os.sep+query_table_name,index=False)
+        os.chmod(integration_set_path+os.sep+query_table_name, 0o777)
+    else:
+        files = glob.glob(integration_set_path+os.sep+"*")
+        for f in files:
+            os.remove(f)
+        query_table.to_csv(integration_set_path+os.sep+query_table_name,index=False)
+        os.chmod(integration_set_path+os.sep+query_table_name, 0o777)
+        
+    #else clean it before adding new tables after discovery.
     algorithm = request.form.getlist('discovery_method')
+    intent_column = int(request.form['intent_column'])
+    k = int(request.form['k'])
+    integration_set = set()
     if "SANTOS" in algorithm:
-        print("Enter index of intent column:")
-        intent_column = int(input())
-        print(intent_column)
         int_set = query_santos(query_table, intent_column, k)
         integration_set = integration_set.union(int_set)
     if "JOSIE" in algorithm:
-        print("Enter index of query column:")
-        query_column = int(input())
-        print(query_column)
-        int_set = query_josie(query_table, query_column, k)
-        integration_set = integration_set.union(int_set)
-    print("Integration set after table discovery:")
-    for table in integration_set:
-        print(table.rsplit("/",1)[-1])
-    return integration_set
+        print("skip for now")
+        #print("Enter index of query column:")
+        #query_column = int(input())
+        #print(query_column)
+        #int_set = query_josie(query_table, query_column, k)
+        #integration_set = integration_set.union(int_set)
+    print(integration_set)
+    return jsonify({"integration_set":integration_set})
 
 @app.route("/show_query_table", methods=["POST"])
 def show_query_table():
     query_table_name = request.form['query_table_name']
     query_table_path = app.config['query_table_folder'] + os.sep + query_table_name
     query_table = pd.read_csv(query_table_path, encoding="latin-1", on_bad_lines="skip")
-    return jsonify({'table': query_table.to_html(index=False, \
-                         col_space=100, justify="center", \
-                            classes='table table-striped table-hover table-bordered')})
+    string_columns = find_string_cols(query_table)
+    return jsonify({'options':string_columns, \
+                    'table': query_table.to_html(index=False, render_links=True, \
+                                escape= False, col_space=100, justify="center", \
+                                table_id="current_query_table", \
+                                    classes='table table-striped table-hover table-bordered')})
     
 
 
