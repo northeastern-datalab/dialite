@@ -11,6 +11,7 @@ import json
 import sys
 import stat
 import santos.codes.santos as santos
+from functools import lru_cache
 
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
@@ -29,6 +30,7 @@ def saveDictionaryAsPickleFile(dictionary, dictionaryPath):
 
             
 #load the pickle file as a dictionary
+@lru_cache(maxsize=None)
 def loadDictionaryFromPickleFile(dictionaryPath):
     print("Loading dictionary at:", dictionaryPath)
     if dictionaryPath.rsplit(".")[-1] == "pickle":
