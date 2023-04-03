@@ -10,11 +10,99 @@ import time
 import os.path
 from pathlib import Path
 import sys
-import generalFunctions as genFunc
-import expandSearch as expand
+import re 
+from nltk.corpus import stopwords
+from nltk import word_tokenize, pos_tag
+
+
 #This function takes a column and determines whether it is text or numeric column
 #This has been done using a well-known information retrieval technique
-#Check each cell to see if it is text. Then if enough number of cells are text, the column is considered as a text column.
+#Check each cell to see if it is text. Then if enough number of cells are 
+#text, the column is considered as a text column.
+def getColumnType(attribute, column_threshold=.5, entity_threshold=.5):
+    attribute = [item for item in attribute if str(item) != "nan"]
+    if len(attribute) == 0:
+        return 0
+    strAttribute = [item for item in attribute if type(item) == str]
+    strAtt = [item for item in strAttribute if not item.isdigit()]
+    for i in range(len(strAtt)-1, -1, -1):
+        entity = strAtt[i]
+        num_count = 0
+        for char in entity:
+            if char.isdigit():
+                num_count += 1
+        if num_count/len(entity) > entity_threshold:
+            del strAtt[i]            
+    if len(strAtt)/len(attribute) > column_threshold:
+        return 1
+    else:
+        return 0
+    
+#removes punctuations and whitespaces from string. The same preprocessing
+#is done in yago label file
+def preprocessString(string):
+    string =  re.sub(r'[^\w]', ' ', string)
+    string = string.replace("nbsp",'')
+    string =" ".join(string.split())
+    return (string)
+
+#removes punctuations and whitespaces from list items
+def preprocessListValues(valueList):
+    valueList = [x.lower() for x in valueList if checkIfNullString(x) !=0]
+    valueList = [re.sub(r'[^\w]', ' ', string) for string in valueList]
+    valueList = [x.replace('nbsp','') for x in valueList ] #remove html whitespace
+    valueList = [" ".join(x.split()) for x in valueList]
+    return valueList
+
+#checks different types of nulls in string
+def checkIfNullString(string):
+    nullList = ['nan','-','unknown','other (unknown)','null','na', "", " "]
+    if str(string).lower() not in nullList:
+        return 1
+    else:
+        return 0
+    
+#remove hyphen and whitespaces from the table name
+def cleanTableName(string):
+    tableName = string.replace("-","")
+    tableName = ' '.join(tableName.split("_"))
+    tableName = '_'.join(tableName.split())
+    return tableName
+
+#needed if direct hit is not found in the KB
+def extractNouns(stringList):
+    sentence = ' '.join(item for item in stringList)
+    nouns = [token for token, pos in pos_tag(word_tokenize(sentence)) if pos.startswith('N')]
+    return nouns
+
+#extracts tokens from the cell value or value list
+def expandQuery(stringList):
+    stringList = [item for item in stringList if type(item) == str]
+    stringList = preprocessListValues(stringList)
+    nounList = extractNouns(stringList)
+    expandedQueryList = [words for segments in nounList for words in segments.split()]
+    # handle phrase queries
+    removeNouns = []
+    for entity in expandedQueryList:
+        entityList = entity.split(" ")
+        if entityList.count('') > 0 and entityList.count('') <= 2:
+            entityList.remove('')
+        index = 0
+        while index <= len(entityList) - 1:
+            word = entityList[index]
+            if word in nounList:
+                if index + 1 < len(entityList):
+                    nextWord = entityList[index + 1]
+                    if entityList[index + 1] in nounList:
+                        removeNouns.append(word)
+                        removeNouns.append(entityList[index + 1])
+                        expandedQueryList.append(word + " " + entityList[index + 1])
+                        index += 1
+            index += 1
+                    
+    finalNouns = [noun for noun in expandedQueryList if noun not in removeNouns]
+    stopWordsRemovedList= [word for word in finalNouns if word.lower() not in stopwords.words('english')]
+    return (list(set(stopWordsRemovedList)))
 
 
 def getMatchingTables(item, weight, parameter):   
@@ -23,7 +111,7 @@ def getMatchingTables(item, weight, parameter):
     for each in item:
         temp = each
         tableName = temp[0]
-        #tableName = genFunc.cleanTableName(temp[0])
+        #tableName = cleanTableName(temp[0])
         tableScore = temp[-1] * weight *parameter
         returnList.append((tableName, tableScore))
     return returnList
@@ -37,10 +125,10 @@ def computeSynthColumnSemantics(input_table, synth_type_kb):
     for (columnName, columnData) in input_table.iteritems():
         sem = {}
         #creating the lookup table for data lake tables
-        if genFunc.getColumnType(input_table[columnName].tolist()) == 1:
+        if getColumnType(input_table[columnName].tolist()) == 1:
             #print(table_name)
             input_table[columnName] = input_table[columnName].map(str)
-            valueList = genFunc.preprocessListValues(input_table[columnName].unique())                   
+            valueList = preprocessListValues(input_table[columnName].unique())                   
             hit_found = 0                
             #find bag of semantics for each column
             for value in valueList:
@@ -71,9 +159,9 @@ def computeSynthRelation(inputTable, subjectIndex, synthKB):
     total_cols = inputTable.shape[1]
     subject_semantics = set()
     for i in range(0, total_cols -1):    
-        if genFunc.getColumnType(inputTable.iloc[:,i].tolist()) == 1: #the subject in rdf triple should be a text column
+        if getColumnType(inputTable.iloc[:,i].tolist()) == 1: #the subject in rdf triple should be a text column
             for j in range(i+1, total_cols):
-                if genFunc.getColumnType(inputTable.iloc[:,j].tolist()) == 1: #the subject in rdf triple should be a text column
+                if getColumnType(inputTable.iloc[:,j].tolist()) == 1: #the subject in rdf triple should be a text column
                     mergeRelSem = {}
                     dataFrameTemp = inputTable.iloc[:,[i,j]]
                     dataFrameTemp = (dataFrameTemp.drop_duplicates()).dropna()
@@ -82,10 +170,10 @@ def computeSynthRelation(inputTable, subjectIndex, synthKB):
                     #find relation semantics for each value pairs of subjectIndex and j
                     for k in range(0,projectedRowsNum):
                         #extract subject and object
-                        sub = genFunc.preprocessString(str(dataFrameTemp.iloc[k][0]).lower())
-                        obj = genFunc.preprocessString(str(dataFrameTemp.iloc[k][1]).lower())
-                        subNull = genFunc.checkIfNullString(sub)
-                        objNull = genFunc.checkIfNullString(obj)
+                        sub = preprocessString(str(dataFrameTemp.iloc[k][0]).lower())
+                        obj = preprocessString(str(dataFrameTemp.iloc[k][1]).lower())
+                        subNull = checkIfNullString(sub)
+                        objNull = checkIfNullString(obj)
                         if subNull != 0 and objNull != 0:
                             item = []
                             value = sub+"__"+obj
@@ -128,7 +216,7 @@ def computeRelationSemantics(input_table, tab_id, LABEL_DICT, FACT_DICT):
     #compute relation semantics
     for i in range(0, total_cols-1):
             #print("i=",i)
-        if genFunc.getColumnType(input_table.iloc[:, i].tolist()) == 1: 
+        if getColumnType(input_table.iloc[:, i].tolist()) == 1: 
             #the subject in rdf triple should be a text column
             for j in range(i+1, total_cols):
                 semantic_dict_forward = {}
@@ -140,10 +228,10 @@ def computeRelationSemantics(input_table, tab_id, LABEL_DICT, FACT_DICT):
                 total_kb_backward_hits = 0
                 for k in range(0, unique_rows_in_pair):
                     #extract subject and object
-                    subject_value = genFunc.preprocessString(str(column_pairs.iloc[k][0]).lower())
-                    object_value = genFunc.preprocessString(str(column_pairs.iloc[k][1]).lower())
-                    is_sub_null = genFunc.checkIfNullString(subject_value)
-                    is_obj_null = genFunc.checkIfNullString(object_value)
+                    subject_value = preprocessString(str(column_pairs.iloc[k][0]).lower())
+                    object_value = preprocessString(str(column_pairs.iloc[k][1]).lower())
+                    is_sub_null = checkIfNullString(subject_value)
+                    is_obj_null = checkIfNullString(object_value)
                     if is_sub_null != 0:
                         sub_entities = LABEL_DICT.get(subject_value, "None")
                         if sub_entities != "None":
@@ -211,10 +299,10 @@ def computeColumnSemantics(input_table, subject_index, LABEL_DICT, TYPE_DICT, CL
     column_dictionary = {}
     subject_semantics = ""
     for (columnName, columnData) in input_table.iteritems():
-        if genFunc.getColumnType(input_table[columnName].tolist()) == 1: #check column Type
+        if getColumnType(input_table[columnName].tolist()) == 1: #check column Type
             input_table[columnName] = input_table[columnName].map(str)                
             #get unique values in the column and preprocess them.
-            value_list = genFunc.preprocessListValues(input_table[columnName].unique())
+            value_list = preprocessListValues(input_table[columnName].unique())
             #search values in KB 
             all_found_types = {}
             total_kb_hits = 0

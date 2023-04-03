@@ -10,7 +10,8 @@ import _pickle as cPickle
 import json
 import sys
 import stat
-import santos.codes as santos
+import santos.codes.santos as santos
+
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
 app.config['integration_set_folder'] = os.path.join('data', 'integration-set')
@@ -311,7 +312,7 @@ def query_santos(query_table, intent_column, k):
             del table_count_final[item]
         
     sortedTableList = sorted(table_count_final.items(), key=lambda x: x[1], reverse=True)
-    return sortedTableList
+    return sortedTableList[:k]
 
 
 @app.before_first_request
