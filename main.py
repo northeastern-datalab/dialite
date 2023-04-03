@@ -1,3 +1,5 @@
+from load_dictionaries import *
+import santos.codes.santos as santos
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import csv
@@ -10,66 +12,11 @@ import _pickle as cPickle
 import json
 import sys
 import stat
-import santos.codes.santos as santos
-from functools import lru_cache
+import shutil
 
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
 app.config['integration_set_folder'] = os.path.join('data', 'integration-set')
-# Utility functions copied from SANTOS 
-
-#This function saves dictionaries as pickle files in the storage.
-def saveDictionaryAsPickleFile(dictionary, dictionaryPath):
-    if dictionaryPath.rsplit(".")[-1] == "pickle":
-        filePointer=open(dictionaryPath, 'wb')
-        pickle.dump(dictionary,filePointer, protocol=pickle.HIGHEST_PROTOCOL)
-        filePointer.close()
-    else:
-        with bz2.BZ2File(dictionaryPath, "w") as f: 
-            cPickle.dump(dictionary, f)
-
-            
-#load the pickle file as a dictionary
-@lru_cache(maxsize=None)
-def loadDictionaryFromPickleFile(dictionaryPath):
-    print("Loading dictionary at:", dictionaryPath)
-    if dictionaryPath.rsplit(".")[-1] == "pickle":
-        filePointer=open(dictionaryPath, 'rb')
-        dictionary = pickle.load(filePointer)
-        filePointer.close()
-    else:
-        dictionary = bz2.BZ2File(dictionaryPath, "rb")
-        dictionary = cPickle.load(dictionary)
-    print("The total number of keys in the dictionary are:", len(dictionary))
-    return dictionary
-
-
-#load csv file as a dictionary. Further preprocessing may be required after loading
-def loadDictionaryFromCsvFile(filePath):
-    if(os.path.isfile(filePath)):
-        with open(filePath) as csv_file:
-            reader = csv.reader(csv_file)
-            dictionary = dict(reader)
-        return dictionary
-    else:
-        print("Sorry! the file is not found. Please try again later. Location checked:", filePath)
-        sys.exit()
-        return 0
-
-#to read json input files where, the data are stored with relation as key.
-def readJson(filename):
-    with open(filename) as f:
-        data = json.load(f)
-        df = pd.DataFrame(data["relation"])
-        df_transposed = df.T
-        # To use the first row as the header row:
-        #new_header = df_transposed.iloc[0]
-        df_transposed = df_transposed[1:]
-        #df_transposed.columns = new_header
-    return df_transposed
-
-# Utility functions copied from SANTOS ends here.
-
 
 def QueryGPT3(prompt):
     openai.api_key = "YOUR_API_KEY "
@@ -317,7 +264,7 @@ def query_santos(query_table, intent_column, k):
     return sortedTableList[:k]
 
 
-@app.before_first_request
+#@app.before_first_request
 def load_dictionaries():
     global label_dict, type_dict, class_dict, fact_dict
     global yago_inverted_index, yago_relation_index, main_index_triples
@@ -445,7 +392,13 @@ def discover_tables():
     integration_set = set()
     if "SANTOS" in algorithm:
         int_set = query_santos(query_table, intent_column, k)
-        integration_set = integration_set.union(int_set)
+        for item in int_set:
+            integration_set.add(item[0])
+            try:
+                shutil.copy(r"data"+os.sep+"dialite_datalake"+os.sep+item[0],integration_set_path+os.sep+item[0])
+            except Exception as e:
+                print(e)
+        # integration_set = integration_set.union(int_set)
     if "JOSIE" in algorithm:
         print("skip for now")
         #print("Enter index of query column:")
@@ -453,8 +406,9 @@ def discover_tables():
         #print(query_column)
         #int_set = query_josie(query_table, query_column, k)
         #integration_set = integration_set.union(int_set)
-    print(integration_set)
-    return jsonify({"integration_set":integration_set})
+    #print(integration_set)
+    integration_list = list(integration_set)
+    return jsonify({"success": True, "message":"Dataset Search is finished!","integration_list":integration_list})
 
 @app.route("/show_query_table", methods=["POST"])
 def show_query_table():

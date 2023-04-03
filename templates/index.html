@@ -77,7 +77,7 @@
                 <label for="dropdown">Select Query Table:</label>
               </div>
               <div class="col-md-8">
-                <select id="discover_query" class = "form-control" name="discover_query">
+                <select id="discover_query" class = "form-control" name="discover_query" required>
                   <option disabled selected>--Select Query Table--</option>
                   {% for table in query_tables %}
                     <option value="{{table}}">{{table}}</option>
@@ -126,7 +126,7 @@
         </div>
         <div id="integrate_table_div" class="display_options">
             <h3 style="text-align:center;">Integrate Tables</h3>
-            <form method="post" action="discover" enctype="multipart/form-data">
+            <form method="post" action="" enctype="multipart/form-data">
               <div class="row form-group">
                 <div class="col-md-4">
                   <label>Select Integration set:</label>
@@ -265,14 +265,13 @@
           });
 
           $('#discover_tables_form').submit(function(e){
+            //console.log($('#discover_query').val());
             e.preventDefault();
-
             // validate query table input
-            if ($('#discover_query').val() == '') {
+            if ($('#discover_query').val() == null) {
               alert('Please select a Query Table.');
               return;
             }
-            
             // validate discovery method input
             if (!$('input[name="discovery_method"]:checked').length) {
               alert('Please select at least one discovery method.');
@@ -286,7 +285,7 @@
             }
             
             // validate query table input
-            if ($('#intent_column').val() == '') {
+            if ($('#intent_column').val() == null) {
               alert('Please select a Search Column.');
               return;
             }
@@ -305,10 +304,22 @@
               type: 'POST',
               data: $('#discover_tables_form').serialize(),
               success: function(response) {
-                console.log(response);
+                //console.log(response);
                 if (response.success) {
                     $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
-                    $('#searched_tables').html(response.table);
+                    let topk_list = document.getElementById("current_query_table");
+                    $('#current_query_table').html('<br><h3 style="text-align:center; color:blue;">Search Results:</h3><br>');
+                    response.integration_list.forEach(function(item){
+                      var li = document.createElement("li");
+                      var link = document.createElement("a");
+                      link.href = "data/dialite_datalake/" + item;
+                      link.download = "data/dialite_datalake/" + item;
+                      //link.download = item;
+                      link.textContent = item;
+                      li.appendChild(link);
+                      topk_list.appendChild(li);
+                    });
+                    
                     var hide_searching_table_success = document.getElementById("searching_table");
                     hide_searching_table_success.style.display = "none";
                 } else {
