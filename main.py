@@ -1,5 +1,5 @@
-from load_dictionaries import *
 import santos.codes.santos as santos
+import alite.alite_fd as alite
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import csv
@@ -13,6 +13,7 @@ import json
 import sys
 import stat
 import shutil
+from load_dictionaries import *
 
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
@@ -59,6 +60,31 @@ def find_string_cols(df):
         if df[col].apply(lambda x: isinstance(x, str)).sum() / len(df) >= 0.75:
             string_cols.append({'value': i, 'text': col})
     return string_cols
+
+def integrate_alite(integration_set):
+    statistics = pd.DataFrame(
+            columns = ["cluster", "n", "s", "f", "labeled_nulls",
+                       "produced_nulls", "complement_time",
+                       "complement_partitions", "largest_partition_size", "partitioning_used",
+                       "subsume_time",
+                       "subsumed_tuples", "total_time", "f_s_ratio"])
+    # cluster_name = integration_set[0].rsplit(os.sep,1)[-1]
+    # cluster_name = cluster_name.rsplit(".", 1)[0]
+    # print("Cluster name:", cluster_name)
+    result_FD, stats_df, debug_dict = alite.FDAlgorithm(integration_set)
+    return result_FD
+    #save result to hard drive
+    #result_FD.to_csv(output_path+ cluster_name+".csv",index = False)
+    #statistics = pd.concat([statistics, stats_df])
+    #statistics.to_csv(stat_path, index = False)
+
+def new_outer_join_integration_algorithm(integration_set):
+    table1_loc = integration_set.pop()
+    table1 = pd.read_csv(table1_loc)
+    for table2_loc in integration_set:
+            table2 = pd.read_csv(table2_loc)
+            table1 = table1.merge(table2, how = "outer")
+    return table1
 
 def query_santos(query_table, intent_column, k):
     #query_table = pd.read_csv(query_table, encoding='latin1', on_bad_lines="skip")
@@ -360,11 +386,15 @@ def generate_table():
         table_text = QueryGPT3(text_prompt)
         table = ConvertTextToTable(table_text)
         table.to_csv(query_table_path, index=False)
-        table_sample = table.head(5)
         message =  "Query Table named "+ generated_query_name +".csv with "
         message += str(table.shape[0])+" rows and "+ str(table.shape[1]) +" columns "
-        message += "Generated successfully! See Sample table."           
-        return jsonify({'success': True, 'message': message, 'table': table_sample.to_html(index=False, col_space=100, justify="center", classes='table table-striped table-hover table-bordered')})
+        message += "Generated successfully!."           
+        return jsonify({'success': True, 'message': message, 'table': 
+                        table.to_html(index=False, render_links=True, \
+                                    escape= False, col_space=100, justify="center", \
+                                    table_id="gpt_generated_table", \
+                                        classes='table table-striped table-hover table-bordered')
+                        })
     except Exception as e:
         return jsonify({'success': False, 'message': str(e), 'table':"Table not generated"})
 
@@ -408,7 +438,59 @@ def discover_tables():
         #integration_set = integration_set.union(int_set)
     #print(integration_set)
     integration_list = list(integration_set)
-    return jsonify({"success": True, "message":"Dataset Search is finished!","integration_list":integration_list})
+    return jsonify({"success": True, "message":"Dataset Search is finished! You can find them in integrate tab.","integration_list":integration_list})
+
+@app.route("/integrate_tables", methods=["POST"])
+def integrate_tables():
+    integration_set_name = request.form['select_integration_sets']
+    integration_set_path = app.config['integration_set_folder'] + os.sep + integration_set_name
+    exclude_list = request.form.getlist('exclude_list')
+    # exclude_set = set()
+    # for exclude in exclude_list:
+    #     exclude_set.add(integration_set_path + os.sep + exclude)
+    exclude_set = set([(integration_set_path + os.sep + str(exclude)) for exclude in exclude_list])
+    # print(exclude_set)
+    # return jsonify({'success': False, 'message': 'debugging'})
+    try:
+        if not os.path.exists(integration_set_path):
+            return jsonify({'success': False, 'message': 'Integration set not found! Please run discovery again!'})
+        else:
+            integration_set = glob.glob(integration_set_path + os.sep + "*.csv")
+            integration_set = list(set(integration_set) - exclude_set)
+            if len(integration_set) <= 1: 
+                query_table = pd.read_csv(integration_set[0], encoding="latin-1", on_bad_lines="skip")
+                return jsonify({'success': True, 
+                                'message': 'There is only one table in the integration set!',
+                                'table': query_table.to_html(index=False, render_links=True, \
+                                    escape= False, col_space=100, justify="center", \
+                                    table_id="integrated_table", \
+                                        classes='table table-striped table-hover table-bordered')
+                                })  
+            else:
+                algorithm = request.form.get('integration_method')
+                print("Integration set: ", integration_set)
+                if algorithm == "OUTER":
+                    integrated_table = new_outer_join_integration_algorithm(integration_set)
+                    return jsonify({'success': True, 
+                                'message': 'Integration successfull!.',
+                                'table': integrated_table.to_html(index=False, render_links=True, \
+                                    escape= False, col_space=100, justify="center", \
+                                    table_id="integrated_table", \
+                                        classes='table table-striped table-hover table-bordered')
+                                }) 
+                # elif algorithm == "NEW ALG": # integrate new algorithm here.
+                else: #default is ALITE
+                    integrated_table = integrate_alite(integration_set)
+                    #print(integrated_table)
+                    return jsonify({'success': True, 
+                                'message': 'Integration successfull!',
+                                'table': integrated_table.to_html(index=False, render_links=True, \
+                                    escape= False, col_space=100, justify="center", \
+                                    table_id="integrated_table", \
+                                        classes='table table-striped table-hover table-bordered')
+                                }) 
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route("/show_query_table", methods=["POST"])
 def show_query_table():
@@ -422,7 +504,14 @@ def show_query_table():
                                 table_id="current_query_table", \
                                     classes='table table-striped table-hover table-bordered')})
     
-
+@app.route("/show_integration_set", methods=["POST"])
+def show_integration_set():
+    integration_set_name = request.form['integration_set_name']
+    integration_set_link = app.config['integration_set_folder'] + os.sep + integration_set_name
+    table_list = glob.glob(integration_set_link+os.sep+"*")
+    table_list = [table.rsplit(os.sep,1)[-1] for table in table_list]
+    table_list = list(set(table_list) - {integration_set_name+".csv"}) #exclude query table so that it can't be checked out.
+    return jsonify({'table_list':table_list, 'integration_set_link': integration_set_link})
 
 
 if __name__ == "__main__":

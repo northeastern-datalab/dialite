@@ -46,6 +46,9 @@
                 </div>
                 <button class="btn btn-success form-control" name = "upload_query" id="upload_query">Upload Table</button>
             </form>
+            <div id="uploading_table" style="display: none;">
+              <p style="text-align: center; color: blue;">Uploading Table. Please wait!!!</p>
+            </div>
         </div>
         <div id="generate_query_div" class="display_options">
           <h3 style="text-align:center;">Generate Query table</h3>
@@ -126,13 +129,13 @@
         </div>
         <div id="integrate_table_div" class="display_options">
             <h3 style="text-align:center;">Integrate Tables</h3>
-            <form method="post" action="" enctype="multipart/form-data">
+            <form id = "integrate_tables_form" enctype="multipart/form-data">
               <div class="row form-group">
                 <div class="col-md-4">
                   <label>Select Integration set:</label>
                 </div>
                 <div class="col-md-8">
-                  <select id="select_integration_sets" class = "form-control" name="select_integration_sets">
+                  <select id="select_integration_sets" required class = "form-control" name="select_integration_sets">
                     <option disabled selected>--Select Query Table--</option>
                     {% for set in integration_sets %}
                       <option value="{{set}}">{{set}}</option>
@@ -148,12 +151,26 @@
                   <label for="select">Select Methods:</label>
                 </div>
                 <div class="col-md-8">
-                  <input type="checkbox" checked id="alite" name="integration_method" value="ALITE"> ALITE&nbsp
-                  <input type="checkbox" id="outer_join" name="integration_method" value="OUTER"> Outer Join
+                  <input type="radio" required checked id="alite" name="integration_method" value="ALITE"> ALITE&nbsp
+                  <input type="radio" required id="outer_join" name="integration_method" value="OUTER"> Outer Join
+                </div>
+              </div>
+              <div class="row form-group" id="check_table_div" style="display: none;">
+                <div class="col-md-4">
+                  <label for="select">Check tables to exclude:</label>
+                </div>
+                <div class="col-md-8" id="exclude_table_options">
+                  <!-- <input type="checkbox" id="dummy1" name="exclude_list" value="dummy1"> <a href="#">Table1</a>&nbsp
+                  <input type="checkbox" id="dummy2" name="exclude_list" value="dummy2"> <a href="#">Table2</a> -->
                 </div>
               </div>
               <input type="submit" class ="form-control btn-success" value="Integrate Tables">
             </form>
+            <div id="integrating_table" style="display: none;">
+              <p style="text-align: center; color: blue;">Integrating Tables. This may take longer!!!</p>
+            </div>
+            <div id="integrated_table_div" style="width: 100%; overflow-x: auto; overflow-y: scroll;"></div>
+            
         </div>
       <hr>
       {% include 'partials/footer.html' %}
@@ -167,6 +184,8 @@
                 alert('Please select a file to upload');
                 return;
             }
+            var show_uploading_table = document.getElementById("uploading_table");
+            show_uploading_table.style.display = "block";
             var form_data = new FormData();
             form_data.append('query_table', file_data);
             $.ajax({
@@ -177,15 +196,21 @@
                 processData: false,
                 success: function(response) {
                   if (response.success) {
-                      $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
+                    var hide_uploading_table_success = document.getElementById("uploading_table");
+                    hide_uploading_table_success.style.display = "none";
+                    $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                   } else {
+                      var hide_uploading_table_fail = document.getElementById("uploading_table");
+                      hide_uploading_table_fail.style.display = "none";
                       $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');
                   }
                   $('#query_table').val('')
               },
               error: function(xhr, status, error) {
                   $('#notification').html('<p style="color:red; text-align:center;">' + xhr.responseText + '</p>');
-                  $('#query_table').val('')
+                  $('#query_table').val('');
+                  var hide_uploading_table_error = document.getElementById("uploading_table");
+                  hide_uploading_table_error.style.display = "none";
                 }
             });
             });
@@ -214,6 +239,7 @@
                 if (response.success) {
                     $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                     $('#generated_table').html(response.table);
+                    $('#generated_table').css("maxHeight", "300px");
                     var hide_generating_table_success = document.getElementById("generating_table");
                     hide_generating_table_success.style.display = "none";
                 } else {
@@ -263,7 +289,7 @@
               }
             });
           });
-
+          
           $('#discover_tables_form').submit(function(e){
             //console.log($('#discover_query').val());
             e.preventDefault();
@@ -335,6 +361,80 @@
               }
             });
             
+          });
+        });
+        
+
+        $('#select_integration_sets').on('change', function() {
+          // Get selected table name
+          let current_set = document.getElementById("select_integration_sets").value;
+          var form_data = new FormData();
+          form_data.append('integration_set_name', current_set);
+          // Send Ajax request to Flask route to load table data
+          $.ajax({
+            url: '/show_integration_set',
+            type: 'POST',
+            contentType: false,
+            processData:false,
+            data: form_data,
+            success: function(response) {
+              // Generate HTML table from DataFrame and replace current table in HTML
+              // console.log(response);
+              // $('#current_query_table').html('<br><h3 style="text-align:center; color:blue;">Selected Query Table:</h3><br>'+ response.table);
+              // $('#current_query_table').css("maxHeight", "300px");
+              var checkboxes = ""
+              response.table_list.forEach(function(item){
+                checkboxes += "<input type = 'checkbox' id = '" + item + "' name = 'exclude_list' value = '" + item;
+                checkboxes += "'> <a href='" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
+              });
+              $("#exclude_table_options").html(checkboxes);
+              var show_check_table_div = document.getElementById("check_table_div");
+              show_check_table_div.style.display = "";
+            }
+          });
+        });
+
+        $('#integrate_tables_form').submit(function(e){
+          //console.log($('#discover_query').val());
+          e.preventDefault();
+          // validate query table input
+          if ($('#select_integration_sets').val() == null) {
+            alert('Please select an Integration set.');
+            return;
+          }
+          // validate discovery method input
+          if (!$('input[name="integration_method"]:checked').length) {
+            alert('Please select at least one discovery method.');
+            return;
+          }
+
+          document.getElementById("integrated_table_div").innerHTML = "";
+          var show_integrating_table = document.getElementById("integrating_table");
+          show_integrating_table.style.display = "block";
+          $.ajax({
+            url: '/integrate_tables',
+            type: 'POST',
+            data: $('#integrate_tables_form').serialize(),
+            success: function(response) {
+              // console.log(response);
+              if (response.success) {
+                  $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
+                  let integrated_table = document.getElementById("integrated_table_div");
+                  $('#integrated_table_div').html('<br><h3 style="text-align:center; color:blue;">Integrated Table:</h3><br>'+response.table);
+                  $('#integrated_table_div').css("maxHeight", "300px");
+                  var hide_integrating_table_success = document.getElementById("integrating_table");
+                  hide_integrating_table_success.style.display = "none";
+              } else {
+                  $('#notification').html('<p style="color:red; text-align:center;">' + response.message + '</p>');
+                  var hide_integrating_table_fail = document.getElementById("integrating_table");
+                  hide_integrating_table_fail.style.display = "none";
+              }
+          },
+          error: function(xhr, status, error) {
+              $('#notification').html('<p style="color:red; text-align:center;">' + xhr.responseText + '</p>');
+              var hide_integrating_table_error = document.getElementById("integrating_table");
+              hide_integrating_table_error.style.display = "none";
+            }
           });
         });
       </script>

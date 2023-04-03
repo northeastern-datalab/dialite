@@ -421,10 +421,10 @@ def EfficientSubsumption(tuple_list):
 
 
 
-def FDAlgorithm(filenames, cluster):
+def FDAlgorithm(filenames):
     #stats
-    print("-----x---------x--------x---")
-    print("Processing cluster:", cluster)
+    # print("-----x---------x--------x---")
+    # print("Processing cluster:", cluster)
     stats_df = pd.DataFrame(
             columns = ["cluster", "n", "s","total_cols", "f", "labeled_nulls",
                        "produced_nulls", "complement_time",
@@ -436,7 +436,7 @@ def FDAlgorithm(filenames, cluster):
     null_count = 0
     null_set = set()
     table1 = filenames[0]
-    table1 = pd.read_csv(table1, encoding='latin1',warn_bad_lines=True, error_bad_lines=False)
+    table1 = pd.read_csv(table1, encoding='latin1', on_bad_lines = "skip")
     table1 = table1.drop_duplicates().reset_index(drop=True)
     table1 = table1.replace(r'^\s*$',np.nan, regex=True)
     table1 = table1.replace("-",np.nan)
@@ -447,7 +447,7 @@ def FDAlgorithm(filenames, cluster):
         null_set = null_set.union(current_null_set)
     table1 = preprocess(table1)
     for files in filenames[1:]:
-        table2 = pd.read_csv(files, encoding='latin1',warn_bad_lines=True, error_bad_lines=False)
+        table2 = pd.read_csv(files, encoding='latin1', on_bad_lines = "skip")
         table2 = table2.drop_duplicates().reset_index(drop=True)
         table2 = table2.replace(r'^\s*$',np.nan, regex=True)
         table1 = table1.replace("-",np.nan)
@@ -491,8 +491,8 @@ def FDAlgorithm(filenames, cluster):
     fd_table = fd_table.replace(np.nan, "nan", regex = True)
     fd_data = [tuple(x) for x in fd_table.values]
     print("Output tuples: ( total", len(fd_data),")")
-    for t in fd_data:
-        print(t)
+    # for t in fd_data:
+    #     print(t)
     end_time = time.time_ns()
     f = len(fd_data)
     produced_nulls = CountProducedNulls(fd_data)
@@ -500,7 +500,7 @@ def FDAlgorithm(filenames, cluster):
     #print("---------------------------------")
     #print("Time taken FD algorithm:", total_time)
     #print("Tuples generated FD algorithm:", f)
-    append_list = [cluster, m, s, total_cols, f, len(null_set),
+    append_list = ["cluster", m, s, total_cols, f, len(null_set),
                    produced_nulls, complement_time, 
                    complement_partitions, largest_partition_size,
                    partitioning_used, subsume_time,
@@ -509,36 +509,3 @@ def FDAlgorithm(filenames, cluster):
     stats_df = stats_df.append(a_series, ignore_index=True)    
     return fd_table, stats_df, debug_dict
 
-if __name__ == "__main__":
-    #INPUT_TABLE_PATH = r"."
-    print("Enter input folder path:")    
-    #input_path = str(input())
-    input_path = r"minimum_example/"
-    print(input_path)
-    output_path = r"output_tables/"+ input_path
-# =============================================================================
-#     if not os.path.exists(output_path):
-#       # Create a new directory because it does not exist 
-#       os.makedirs(output_path)
-#       print("output directory is is created!")
-# =============================================================================
-    stat_path = r"statistics/"+ input_path[:-1]+".csv"
-    foldernames = glob.glob(input_path + "*")
-    #print(foldernames)
-    statistics = pd.DataFrame(
-            columns = ["cluster", "n", "s", "f", "labeled_nulls",
-                       "produced_nulls", "complement_time",
-                       "complement_partitions", "largest_partition_size", "partitioning_used",
-                       "subsume_time",
-                       "subsumed_tuples", "total_time", "f_s_ratio"])
-    for cluster in foldernames:
-        try:
-            filenames = glob.glob(cluster + "/*.csv")
-        except:
-            continue
-        cluster_name = cluster.rsplit("/")[-1]
-        result_FD, stats_df, debug_dict = FDAlgorithm(filenames, cluster_name)
-        #save result to hard drive
-        #result_FD.to_csv(output_path+ cluster_name+".csv",index = False)
-        #statistics = pd.concat([statistics, stats_df])
-        #statistics.to_csv(stat_path, index = False)
