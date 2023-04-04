@@ -239,7 +239,7 @@
                 if (response.success) {
                     $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                     $('#generated_table').html(response.table);
-                    $('#generated_table').css("maxHeight", "300px");
+                    $('#generated_table').css("maxHeight", "400px");
                     var hide_generating_table_success = document.getElementById("generating_table");
                     hide_generating_table_success.style.display = "none";
                 } else {
@@ -280,7 +280,7 @@
                 // Generate HTML table from DataFrame and replace current table in HTML
                 //console.log(response.table);
                 $('#current_query_table').html('<br><h3 style="text-align:center; color:blue;">Selected Query Table:</h3><br>'+ response.table);
-                $('#current_query_table').css("maxHeight", "300px");
+                $('#current_query_table').css("maxHeight", "400px");
                 var options = "<option disabled selected>--Select Column--</option> "
                 $.each(response.options, function(key, value) {
                   options += "<option value = '" + value.value + "'>" + value.text + "</option>";
@@ -421,7 +421,7 @@
                   $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                   let integrated_table = document.getElementById("integrated_table_div");
                   $('#integrated_table_div').html('<br><h3 style="text-align:center; color:blue;">Integrated Table:</h3><br>'+response.table);
-                  $('#integrated_table_div').css("maxHeight", "300px");
+                  $('#integrated_table_div').css("maxHeight", "400px");
                   var hide_integrating_table_success = document.getElementById("integrating_table");
                   hide_integrating_table_success.style.display = "none";
               } else {
