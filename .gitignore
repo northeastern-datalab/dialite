@@ -9,7 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
-data/dialite_datalake/
+data/
 develop-eggs/
 dist/
 downloads/
