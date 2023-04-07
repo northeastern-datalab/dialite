@@ -80,11 +80,11 @@ We demonstrate a novel table discovery pipeline called DIALITE that allows users
     ```
 
 4. Upload your data lake tables to [data/dialite_datalake](data/dialite_datalake) folder. You can run the following command that downloads SANTOS Small Benchmark and use it as a data lake. Note that we also provide the preprocessed indexes in the previous step for this benchmark. 
-```
-cd data/dialite_datalake && zenodo_get 7758091 && unzip santos_benchmark.zip && cd santos_benchmark && mv * ../ && cd ../ && rm -r santos_benchmark && rm *.zip & cd ../
-```
+    ```
+    cd data/dialite_datalake && zenodo_get 7758091 && unzip santos_benchmark.zip && cd santos_benchmark && mv * ../ && cd ../ && rm -r santos_benchmark && rm *.zip & cd ../
+    ```
 
-4. Set Environment Variables.
+5. Set Environment Variables.
   * On macOS or Linux:
     ```
     export FLASK_APP=main.py
@@ -98,7 +98,7 @@ cd data/dialite_datalake && zenodo_get 7758091 && unzip santos_benchmark.zip && 
     ```
     If you want to turn off the debug mode, set FLASK_DEBUG=0.
 
-5. Start Flask Application in a terminal. If you want to run the server in default port:
+6. Start Flask Application in a terminal. If you want to run the server in default port:
     ```
     flask run
     ```
@@ -108,7 +108,7 @@ cd data/dialite_datalake && zenodo_get 7758091 && unzip santos_benchmark.zip && 
     ```
     Since this step loads the preprocessed indexes, it may take some time.
 
-6. Open the link in the terminal using any web browsers that supports HTML5 and javascript.
+7. Open the link in the terminal using any web browsers that supports HTML5 and javascript.
 
 ## Citation
 ```
