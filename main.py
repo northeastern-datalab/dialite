@@ -14,13 +14,14 @@ import sys
 import stat
 import shutil
 from load_dictionaries import *
-
+from waitress import serve
+    
 app = Flask(__name__)
 app.config['query_table_folder'] = os.path.join('data', 'query')
 app.config['integration_set_folder'] = os.path.join('data', 'integration-set')
 
-def QueryGPT3(prompt):
-    openai.api_key = "YOUR_API_KEY "
+def QueryGPT3(prompt, api_key):
+    openai.api_key = api_key
     response = openai.Completion.create(
     model="text-davinci-003",
     prompt=prompt,
@@ -290,41 +291,6 @@ def query_santos(query_table, intent_column, k):
     return sortedTableList[:k]
 
 
-#@app.before_first_request
-def load_dictionaries():
-    global label_dict, type_dict, class_dict, fact_dict
-    global yago_inverted_index, yago_relation_index, main_index_triples
-    global synth_type_kb, synth_relation_kb, synth_type_inverted_index, synth_relation_inverted_index
-    YAGO_PATH = r"yago/"
-    LABEL_FILE_PATH = YAGO_PATH + "yago-wd-labels_dict.pickle" 
-    TYPE_FILE_PATH = YAGO_PATH + "yago-wd-full-types_dict.pickle" 
-    CLASS_FILE_PATH = YAGO_PATH + "yago-wd-class_dict.pickle"
-    FACT_FILE_PATH = YAGO_PATH + "yago-wd-facts_dict.pickle"
-
-    YAGO_MAIN_INVERTED_INDEX_PATH = r"santos/hashmap/dialite_datalake_main_yago_index.pickle"
-    YAGO_MAIN_RELATION_INDEX_PATH = r"santos/hashmap/dialite_datalake_main_relation_index.pickle"
-    YAGO_MAIN_PICKLE_TRIPLE_INDEX_PATH = r"santos/hashmap/dialite_datalake_main_triple_index.pickle"
-
-    SYNTH_TYPE_KB_PATH =   r"santos/hashmap/dialite_datalake_synth_type_kb.pbz2"
-    SYNTH_RELATION_KB_PATH =   r"santos/hashmap/dialite_datalake_synth_relation_kb.pbz2"
-    SYNTH_TYPE_INVERTED_INDEX_PATH = r"santos/hashmap/dialite_datalake_synth_type_inverted_index.pbz2"
-    SYNTH_RELATION_INVERTED_INDEX_PATH = r"santos/hashmap/dialite_datalake_synth_relation_inverted_index.pbz2"
-
-    label_dict = loadDictionaryFromPickleFile(LABEL_FILE_PATH)
-    type_dict = loadDictionaryFromPickleFile(TYPE_FILE_PATH)
-    class_dict = loadDictionaryFromPickleFile(CLASS_FILE_PATH)
-    fact_dict = loadDictionaryFromPickleFile(FACT_FILE_PATH)
-
-    yago_inverted_index = loadDictionaryFromPickleFile(YAGO_MAIN_INVERTED_INDEX_PATH)
-    yago_relation_index = loadDictionaryFromPickleFile(YAGO_MAIN_RELATION_INDEX_PATH)
-    main_index_triples = loadDictionaryFromPickleFile(YAGO_MAIN_PICKLE_TRIPLE_INDEX_PATH)
-
-    synth_type_kb = loadDictionaryFromPickleFile(SYNTH_TYPE_KB_PATH)
-    synth_relation_kb = loadDictionaryFromPickleFile(SYNTH_RELATION_KB_PATH)
-    synth_type_inverted_index= loadDictionaryFromPickleFile(SYNTH_TYPE_INVERTED_INDEX_PATH)
-    synth_relation_inverted_index = loadDictionaryFromPickleFile(SYNTH_RELATION_INVERTED_INDEX_PATH)
-
-
 @app.route("/")
 def index():   
     query_tables = glob.glob(r"data"+os.sep+"query"+os.sep+"*")
@@ -380,10 +346,11 @@ def generate_table():
         #"generate a table about covid with 5 columns and 10 rows"
         text_prompt = request.form['query_prompt'] 
         generated_query_name = request.form['generated_query_name']
+        api_key = request.form['api_key']
         query_table_path = app.config['query_table_folder']+os.sep+generated_query_name+".csv"
         if os.path.isfile(query_table_path) == True:
                 return jsonify({'success': False, 'message': 'File already exists. Please give a different name!'})
-        table_text = QueryGPT3(text_prompt)
+        table_text = QueryGPT3(text_prompt, api_key)
         table = ConvertTextToTable(table_text)
         table.to_csv(query_table_path, index=False)
         message =  "Query Table named "+ generated_query_name +".csv with "
@@ -515,4 +482,13 @@ def show_integration_set():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("Press 1 to host the website live (this needs more information). Press any other keys to host the website locally.")
+    choice = int(input())
+    if choice == 1:
+        print("Enter host ip address:")
+        host = str(input())
+        print("Enter Port number:")
+        port = int(input())
+        serve(app, host=host, port=port)
+    else:
+        app.run(debug=True)

@@ -54,16 +54,23 @@
           <h3 style="text-align:center;">Generate Query table</h3>
           <form>
             <div class="row form-group">
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                   <label>Name query table</label>
-                </div>
-                <div class="col-md-8">
+                </div> -->
+                <!-- <div class="col-md-8"> -->
+                <label>Name query table:</label>
                 <input type="text" name="generated_query_name" class="form-control" id="generated_query_name" placeholder="Enter table name without extension." required>
-                </div>
+                <!-- </div> -->
             </div>
             <div class="row form-group">
               <label>Enter a prompt to generate Query table. An example prompt is provided.</label>
               <textarea rows="3" id="query_prompt" name="query_prompt" class="form-control" style="resize:null" required>Generate a table about soccer players with 10 rows and 10 columns.</textarea>
+            </div>
+            <div class="row form-group">
+              <label>Enter your OPEN AI API KEY. You can generate one from <a href="https://platform.openai.com/" target="_blank">Open AI website</a>. Note that we do not store it or use it for any other purposes. Still for your safety, you can always deactivate your key after use.</label>
+              <input type="text" name="api_key" class="form-control" id="api_key" placeholder="XX-************************************************" required>
+            </div>
+            <div class="row form-group">
               <button id="submit_prompt" class="btn btn-success form-control">Generate Query Table</button>
             </div>
           </form>
@@ -219,6 +226,7 @@
             e.preventDefault();
             var query_prompt = $('#query_prompt').val();
             var generated_query_name = $("#generated_query_name").val();
+            var api_key = $("#api_key").val();
             if (!query_prompt || !generated_query_name) {
                 alert('Please enter table name and a prompt to generate query table');
                 return;
@@ -229,6 +237,7 @@
             var form_data = new FormData();
             form_data.append('generated_query_name', generated_query_name);
             form_data.append('query_prompt', query_prompt);
+            form_data.append('api_key', api_key);
             $.ajax({
               url: '/generate_query',
               type: 'POST',
