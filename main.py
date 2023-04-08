@@ -6,14 +6,14 @@ import csv
 import os, socket
 import openai
 import glob
-import time
+import time, random
 import pickle, bz2
 import _pickle as cPickle
 import json
 import sys
 import stat
 import shutil
-from load_dictionaries import *
+# from load_dictionaries import *
 from waitress import serve
     
 app = Flask(__name__)
@@ -426,35 +426,55 @@ def integrate_tables():
             integration_set = list(set(integration_set) - exclude_set)
             if len(integration_set) <= 1: 
                 query_table = pd.read_csv(integration_set[0], encoding="latin-1", on_bad_lines="skip")
+
                 return jsonify({'success': True, 
                                 'message': 'There is only one table in the integration set!',
                                 'table': query_table.to_html(index=False, render_links=True, \
                                     escape= False, col_space=100, justify="center", \
                                     table_id="integrated_table", \
-                                        classes='table table-striped table-hover table-bordered')
+                                        classes='table table-striped table-hover table-bordered'),
+                                    'link': integration_set[0]
                                 })  
             else:
                 algorithm = request.form.get('integration_method')
                 print("Integration set: ", integration_set)
                 if algorithm == "OUTER":
                     integrated_table = new_outer_join_integration_algorithm(integration_set)
+                    time_int = int(time.time())
+                    # Use time to generate random number
+                    random.seed(time_int)
+                    rand_num = random.randint(100000, 999999)
+                    # Truncate to 6 digits
+                    rand_num_str = str(rand_num)[:6]
+                    save_to = r"data/integration-result/ir_outerjoin_"+integration_set_name+"-"+rand_num_str+".csv"
+                    integrated_table.to_csv(save_to, index =False)
                     return jsonify({'success': True, 
                                 'message': 'Integration successfull!.',
                                 'table': integrated_table.to_html(index=False, render_links=True, \
                                     escape= False, col_space=100, justify="center", \
                                     table_id="integrated_table", \
-                                        classes='table table-striped table-hover table-bordered')
+                                        classes='table table-striped table-hover table-bordered'),
+                                'link': save_to
                                 }) 
                 # elif algorithm == "NEW ALG": # integrate new algorithm here.
                 else: #default is ALITE
                     integrated_table = integrate_alite(integration_set)
+                    time_int = int(time.time())
+                    # Use time to generate random number
+                    random.seed(time_int)
+                    rand_num = random.randint(100000, 999999)
+                    # Truncate to 6 digits
+                    rand_num_str = str(rand_num)[:6]
+                    save_to = r"data/integration-result/ir_alite_"+integration_set_name+"-"+rand_num_str+".csv"
+                    integrated_table.to_csv(save_to, index =False)
                     #print(integrated_table)
                     return jsonify({'success': True, 
                                 'message': 'Integration successfull!',
                                 'table': integrated_table.to_html(index=False, render_links=True, \
                                     escape= False, col_space=100, justify="center", \
                                     table_id="integrated_table", \
-                                        classes='table table-striped table-hover table-bordered')
+                                        classes='table table-striped table-hover table-bordered'),
+                                'link': save_to
                                 }) 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})

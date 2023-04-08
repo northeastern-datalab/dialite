@@ -425,12 +425,17 @@
             type: 'POST',
             data: $('#integrate_tables_form').serialize(),
             success: function(response) {
-              // console.log(response);
+              console.log(response);
               if (response.success) {
                   $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                   let integrated_table = document.getElementById("integrated_table_div");
-                  $('#integrated_table_div').html('<br><h3 style="text-align:center; color:blue;">Integrated Table:</h3><br>'+response.table);
+                  $('#integrated_table_div').html('<br><h3 style="text-align:center; color:blue;">Integrated Table:</h3><br>');
+                  // Generate the download button and add it to the table container
+                  var downloadButton = '<a href="/download?file='+response.link+'">Download Table</a>';
+                  $('#integrated_table_div').append(downloadButton);
+                  $('#integrated_table_div').append(response.table);
                   $('#integrated_table_div').css("maxHeight", "400px");
+      
                   var hide_integrating_table_success = document.getElementById("integrating_table");
                   hide_integrating_table_success.style.display = "none";
               } else {
