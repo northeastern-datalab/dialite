@@ -425,7 +425,7 @@
             type: 'POST',
             data: $('#integrate_tables_form').serialize(),
             success: function(response) {
-              console.log(response);
+              //console.log(response);
               if (response.success) {
                   $('#notification').html('<p style="color:green; text-align:center;">' + response.message + '</p>');
                   let integrated_table = document.getElementById("integrated_table_div");
