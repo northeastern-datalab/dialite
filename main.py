@@ -1,9 +1,9 @@
 import santos.codes.santos as santos
 import alite.alite_fd as alite
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file, abort
 import pandas as pd
 import csv
-import os
+import os, socket
 import openai
 import glob
 import time
@@ -480,15 +480,22 @@ def show_integration_set():
     table_list = list(set(table_list) - {integration_set_name+".csv"}) #exclude query table so that it can't be checked out.
     return jsonify({'table_list':table_list, 'integration_set_link': integration_set_link})
 
+@app.route('/download/')
+def download_file():
+    filename = request.args.get('file')
+    if os.path.isfile(os.path.join(filename)):
+        return send_file(filename, as_attachment=True)
+    else:
+        abort(404, "File not found") # Return a 404 error with an error message
 
 if __name__ == "__main__":
     print("Press 1 to host the website live (this needs more information). Press any other keys to host the website locally.")
     choice = int(input())
     if choice == 1:
-        print("Enter host ip address:")
-        host = str(input())
+        hostname = socket.gethostname()
+        ip = socket.gethostbyname(hostname)
         print("Enter Port number:")
         port = int(input())
-        serve(app, host=host, port=port)
+        serve(app, host=hostname, port=port)
     else:
         app.run(debug=True)

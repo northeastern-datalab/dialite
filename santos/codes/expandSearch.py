@@ -2,8 +2,8 @@
 
 
 import string
-from nltk.corpus import stopwords
-from nltk import word_tokenize, pos_tag
+# from nltk.corpus import stopwords
+# from nltk import word_tokenize, pos_tag
 import re
 
 def puncRemove(stringList):

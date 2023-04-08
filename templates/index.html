@@ -347,8 +347,8 @@
                     response.integration_list.forEach(function(item){
                       var li = document.createElement("li");
                       var link = document.createElement("a");
-                      link.href = "data/dialite_datalake/" + item;
-                      link.download = "data/dialite_datalake/" + item;
+                      link.href = "/download?file=data/dialite_datalake/" + item;
+                      //link.download = "data/dialite_datalake/" + item;
                       //link.download = item;
                       link.textContent = item;
                       li.appendChild(link);
@@ -394,7 +394,7 @@
               var checkboxes = ""
               response.table_list.forEach(function(item){
                 checkboxes += "<input type = 'checkbox' id = '" + item + "' name = 'exclude_list' value = '" + item;
-                checkboxes += "'> <a href='" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
+                checkboxes += "'> <a href='/download?file=" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
               });
               $("#exclude_table_options").html(checkboxes);
               var show_check_table_div = document.getElementById("check_table_div");

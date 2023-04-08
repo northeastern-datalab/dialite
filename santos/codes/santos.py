@@ -11,8 +11,8 @@ import os.path
 from pathlib import Path
 import sys
 import re 
-from nltk.corpus import stopwords
-from nltk import word_tokenize, pos_tag
+# from nltk.corpus import stopwords
+# from nltk import word_tokenize, pos_tag
 
 
 #This function takes a column and determines whether it is text or numeric column
