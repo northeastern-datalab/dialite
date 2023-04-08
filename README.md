@@ -98,15 +98,10 @@ We demonstrate a novel table discovery pipeline called DIALITE that allows users
     ```
     If you want to turn off the debug mode, set FLASK_DEBUG=0.
 
-6. Start Flask Application in a terminal. If you want to run the server in default port:
+6. Start Flask Application in a terminal.
     ```
-    flask run
+    python main.py
     ```
-    If you want to run it in a specific port (that is not occupied by other applications):
-    ```
-    flask run --port <PORT_NUMBER>
-    ```
-    Since this step loads the preprocessed indexes, it may take some time.
 
 7. Open the link in the terminal using any web browsers that supports HTML5 and javascript.
 

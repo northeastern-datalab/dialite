@@ -431,7 +431,7 @@
                   let integrated_table = document.getElementById("integrated_table_div");
                   $('#integrated_table_div').html('<br><h3 style="text-align:center; color:blue;">Integrated Table:</h3><br>');
                   // Generate the download button and add it to the table container
-                  var downloadButton = '<a href="/download?file='+response.link+'">Download Table</a>';
+                  var downloadButton = '<a href="/download?file='+response.link+'" class="btn btn-danger">Download Table</a>';
                   $('#integrated_table_div').append(downloadButton);
                   $('#integrated_table_div').append(response.table);
                   $('#integrated_table_div').css("maxHeight", "400px");
