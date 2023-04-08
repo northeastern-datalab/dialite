@@ -13,7 +13,7 @@ import json
 import sys
 import stat
 import shutil
-# from load_dictionaries import *
+from load_dictionaries import *
 from waitress import serve
     
 app = Flask(__name__)
