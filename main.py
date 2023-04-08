@@ -509,7 +509,7 @@ def download_file():
         abort(404, "File not found") # Return a 404 error with an error message
 
 if __name__ == "__main__":
-    print("Press 1 to host the website live (this needs more information). Press any other keys to host the website locally.")
+    print("Press 1 to host the website live. Press any other keys to host the website using localhost.")
     choice = int(input())
     if choice == 1:
         hostname = socket.gethostname()
@@ -518,4 +518,6 @@ if __name__ == "__main__":
         port = int(input())
         serve(app, host=hostname, port=port)
     else:
-        app.run(debug=True)
+        print("Enter Port number:")
+        port = int(input())
+        app.run(debug=True,port=port)
