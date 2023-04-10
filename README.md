@@ -103,7 +103,7 @@ We demonstrate a novel table discovery pipeline called DIALITE that allows users
     python main.py
     ```
 
-7. Open the link in the terminal using any web browsers that supports HTML5 and javascript.
+7. Open the link shown in the terminal using any web browser. The browser must support HTML5 and javascript.
 
 ## Citation
 ```
