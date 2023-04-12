@@ -15,6 +15,7 @@
         <div class="row">
         <div class="col-md-2 col-sm-2 col-lg-2"></div>
         <div class="col-md-8 col-sm-8 col-lg-8">
+        <p style="color: red; text-align:center;">Our permanent website is: <a href="http://icde.khoury.northeastern.edu/dialite">http://icde.khoury.northeastern.edu/dialite</a>. The previous address: <a href="#">http://icde.khoury.northeastern.edu:9000</a> may not work as expected.</p>
         <p style="text-align: justify;"> Abstract: We demonstrate a novel table discovery pipeline called DIALITE that allows users to discover, integrate and analyze open data tables. DIALITE has three main stages. First, it allows users to discover tables from open data platforms using state-of-the-art table discovery techniques. Second, DIALITE integrates the discovered tables to produce an integrated table. Finally, it allows users to analyze the integration result by applying different downstreaming tasks over it. Our pipeline has a flexible architecture such that the user can easily add and compare additional discovery and integration algorithms.</p>
         <p>Related Paper: Aamod Khatiwada, Roee Shraga, and Renée J. Miller. DIALITE: Discover, Align and Integrate Open Data Tables. In SIGMOD-Companion 2023, ACM.
           <a target="_blank" href="https://doi.org/10.1145/3555041.3589732">https://doi.org/10.1145/3555041.3589732</a></p>
@@ -118,12 +119,20 @@
                 <!-- <input type="number" class = "form-control" id="intent_column" name="intent_column" min="0" step="1" value="0" required> -->
               </div>
             </div>
-            <div class="row form-group">
+            <div class="row form-group" id="top_k_div">
               <div class="col-md-4">
                 <label for="k">Select k:</label>
               </div>
               <div class="col-md-8">
                 <input type="number" class = "form-control" id="number" name="k" min="1" step="1" value="1" required>
+              </div>
+            </div>
+            <div class="row form-group" id="threshold_div">
+              <div class="col-md-4">
+                <label for="threshold">Select threshold:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="number" class = "form-control" id="number" name="k" min="0.05" step="0.01" value="0.9" required>
               </div>
             </div>
             <input type="submit" class="btn btn-success form-control" value="Search Tables">
@@ -196,7 +205,7 @@
             var form_data = new FormData();
             form_data.append('query_table', file_data);
             $.ajax({
-                url: '/upload_query',
+                url: '/dialite/upload_query',
                 type: 'POST',
                 data: form_data,
                 contentType: false,
@@ -239,7 +248,7 @@
             form_data.append('query_prompt', query_prompt);
             form_data.append('api_key', api_key);
             $.ajax({
-              url: '/generate_query',
+              url: '/dialite/generate_query',
               type: 'POST',
               data: form_data,
               contentType: false,
@@ -265,6 +274,24 @@
             });
             
           });
+          $("#threshold_div").hide();
+           // Attach a click event handler to each checkbox
+          $("#santos").click(function() {
+            if ($(this).is(":checked")) {
+              $("#top_k_div").show();
+            } else {
+              $("#top_k_div").hide();
+            }
+          });
+
+          $("#josie").click(function() {
+            if ($(this).is(":checked")) {
+              $("#threshold_div").show();
+            } else {
+              $("#threshold_div").hide();
+            }
+          });
+
           $('#intent_column').on('change', function() {
             let selectOption = document.getElementById("intent_column");
             let selectedColumn = selectOption.options[selectOption.selectedIndex].text;
@@ -280,7 +307,7 @@
             form_data.append('query_table_name', discover_query);
             // Send Ajax request to Flask route to load table data
             $.ajax({
-              url: '/show_query_table',
+              url: '/dialite/show_query_table',
               type: 'POST',
               contentType: false,
               processData:false,
@@ -335,7 +362,7 @@
             var show_searching_table = document.getElementById("searching_table");
             show_searching_table.style.display = "block";
             $.ajax({
-              url: '/discover_tables',
+              url: '/dialite/discover_tables',
               type: 'POST',
               data: $('#discover_tables_form').serialize(),
               success: function(response) {
@@ -347,7 +374,7 @@
                     response.integration_list.forEach(function(item){
                       var li = document.createElement("li");
                       var link = document.createElement("a");
-                      link.href = "/download?file=data/dialite_datalake/" + item;
+                      link.href = "/dialite/download?file=data/dialite_datalake/" + item;
                       //link.download = "data/dialite_datalake/" + item;
                       //link.download = item;
                       link.textContent = item;
@@ -381,7 +408,7 @@
           form_data.append('integration_set_name', current_set);
           // Send Ajax request to Flask route to load table data
           $.ajax({
-            url: '/show_integration_set',
+            url: '/dialite/show_integration_set',
             type: 'POST',
             contentType: false,
             processData:false,
@@ -394,7 +421,7 @@
               var checkboxes = ""
               response.table_list.forEach(function(item){
                 checkboxes += "<input type = 'checkbox' id = '" + item + "' name = 'exclude_list' value = '" + item;
-                checkboxes += "'> <a href='/download?file=" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
+                checkboxes += "'> <a href='/dialite/download?file=" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
               });
               $("#exclude_table_options").html(checkboxes);
               var show_check_table_div = document.getElementById("check_table_div");
@@ -421,7 +448,7 @@
           var show_integrating_table = document.getElementById("integrating_table");
           show_integrating_table.style.display = "block";
           $.ajax({
-            url: '/integrate_tables',
+            url: '/dialite/integrate_tables',
             type: 'POST',
             data: $('#integrate_tables_form').serialize(),
             success: function(response) {
