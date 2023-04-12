@@ -483,7 +483,7 @@ def integrate_tables():
 def show_query_table():
     query_table_name = request.form['query_table_name']
     query_table_path = app.config['query_table_folder'] + os.sep + query_table_name
-    query_table = pd.read_csv(query_table_path, encoding="latin-1", on_bad_lines="skip")
+    query_table = pd.read_csv(query_table_path, encoding="latin-1", nrows=50, on_bad_lines="skip")
     string_columns = find_string_cols(query_table)
     return jsonify({'options':string_columns, \
                     'table': query_table.to_html(index=False, render_links=True, \
@@ -500,7 +500,7 @@ def show_integration_set():
     table_list = list(set(table_list) - {integration_set_name+".csv"}) #exclude query table so that it can't be checked out.
     return jsonify({'table_list':table_list, 'integration_set_link': integration_set_link})
 
-@app.route('/download/')
+@app.route('/download')
 def download_file():
     filename = request.args.get('file')
     if os.path.isfile(os.path.join(filename)):

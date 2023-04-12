@@ -205,7 +205,7 @@
             var form_data = new FormData();
             form_data.append('query_table', file_data);
             $.ajax({
-                url: '/dialite/upload_query',
+                url: '/upload_query',
                 type: 'POST',
                 data: form_data,
                 contentType: false,
@@ -248,7 +248,7 @@
             form_data.append('query_prompt', query_prompt);
             form_data.append('api_key', api_key);
             $.ajax({
-              url: '/dialite/generate_query',
+              url: '/generate_query',
               type: 'POST',
               data: form_data,
               contentType: false,
@@ -307,7 +307,7 @@
             form_data.append('query_table_name', discover_query);
             // Send Ajax request to Flask route to load table data
             $.ajax({
-              url: '/dialite/show_query_table',
+              url: '/show_query_table',
               type: 'POST',
               contentType: false,
               processData:false,
@@ -362,7 +362,7 @@
             var show_searching_table = document.getElementById("searching_table");
             show_searching_table.style.display = "block";
             $.ajax({
-              url: '/dialite/discover_tables',
+              url: '/discover_tables',
               type: 'POST',
               data: $('#discover_tables_form').serialize(),
               success: function(response) {
@@ -374,7 +374,7 @@
                     response.integration_list.forEach(function(item){
                       var li = document.createElement("li");
                       var link = document.createElement("a");
-                      link.href = "/dialite/download?file=data/dialite_datalake/" + item;
+                      link.href = "/download?file=data/dialite_datalake/" + item;
                       //link.download = "data/dialite_datalake/" + item;
                       //link.download = item;
                       link.textContent = item;
@@ -408,7 +408,7 @@
           form_data.append('integration_set_name', current_set);
           // Send Ajax request to Flask route to load table data
           $.ajax({
-            url: '/dialite/show_integration_set',
+            url: '/show_integration_set',
             type: 'POST',
             contentType: false,
             processData:false,
@@ -421,7 +421,7 @@
               var checkboxes = ""
               response.table_list.forEach(function(item){
                 checkboxes += "<input type = 'checkbox' id = '" + item + "' name = 'exclude_list' value = '" + item;
-                checkboxes += "'> <a href='/dialite/download?file=" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
+                checkboxes += "'> <a href='/download?file=" + response.integration_set_link+"/"+item+"' target = '_blank'>"+ item +"</a>&nbsp";
               });
               $("#exclude_table_options").html(checkboxes);
               var show_check_table_div = document.getElementById("check_table_div");
@@ -448,7 +448,7 @@
           var show_integrating_table = document.getElementById("integrating_table");
           show_integrating_table.style.display = "block";
           $.ajax({
-            url: '/dialite/integrate_tables',
+            url: '/integrate_tables',
             type: 'POST',
             data: $('#integrate_tables_form').serialize(),
             success: function(response) {
