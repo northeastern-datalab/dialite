@@ -4,7 +4,7 @@ This repository contains the implementation codes for our demo paper: DIALITE, a
 
 Authors: Aamod Khatiwada, Roee Shraga and Renée J. Miller
 
-Preprint: [https://arxiv.org/abs/2304.08285] (https://arxiv.org/abs/2304.08285)
+Preprint: [https://arxiv.org/abs/2304.08285](https://arxiv.org/abs/2304.08285)
 
 Link to the demo website: 
 [https://tinyurl.com/dialite-sigmod](https://tinyurl.com/dialite-sigmod)
