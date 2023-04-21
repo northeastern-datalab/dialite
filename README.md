@@ -6,7 +6,7 @@ Authors: Aamod Khatiwada, Roee Shraga and Renée J. Miller
 
 
 Link to the demo website: 
-[https://tinyurl.com/dialiteDemo](https://tinyurl.com/dialiteDemo)
+[https://tinyurl.com/dialite-sigmod](https://tinyurl.com/dialite-sigmod)
 
 Link to the demonstration video (using Jupyter Notebook): 
 
