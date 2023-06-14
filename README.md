@@ -4,14 +4,14 @@ This repository contains the implementation codes for our demo paper: DIALITE, a
 
 Authors: Aamod Khatiwada, Roee Shraga and Renée J. Miller
 
-Preprint: [https://arxiv.org/abs/2304.08285](https://arxiv.org/abs/2304.08285)
+Paper and demonstration video: [https://dl.acm.org/doi/10.1145/3555041.3589732](https://dl.acm.org/doi/10.1145/3555041.3589732)
 
 Link to the demo website: 
 [https://tinyurl.com/dialite-sigmod](https://tinyurl.com/dialite-sigmod)
 
-Link to the demonstration video (using Jupyter Notebook): 
+<!-- Link to the demonstration video (using Jupyter Notebook): 
 
- [https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/view?usp=sharing](https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/view?usp=sharing).
+ [https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/view?usp=sharing](https://drive.google.com/file/d/1hFWq5QkGFigBURcwVebBtZi5R5Xv9rfq/view?usp=sharing). -->
 
 ![dialite blockdiargam](dialite.jpg)*Block Diagram of DIALITE System*
 
@@ -24,7 +24,7 @@ We demonstrate a novel table discovery pipeline called DIALITE that allows users
 - **alite** folder contains ALITE codes adopted from its [original implementation](https://github.com/northeastern-datalab/alite).
 - **data** folder contains the sub-folders for sample datasets and placeholder for additional datasets.
 - **dialite.png** file shows the block diagram of DIALITE system.
-- **josie** folder contains the joinability system codes. 
+- **join** folder contains the joinability system codes. 
 - **santos** folder contains SANTOS codes and indexes adopted from its [original implementation](https://github.com/northeastern-datalab/santos).
 - **README.md** file explains the repository.
 - **requirements.txt** file contains necessary packages to run the project.
@@ -108,15 +108,17 @@ We demonstrate a novel table discovery pipeline called DIALITE that allows users
 
 ## Citation
 ```
-@inproceedings{DBLP:conf/sigmod/Khatiwada23,
-  author    = {Aamod Khatiwada and
-               Roee Shraga and
-               Ren{\'{e}}e J. Miller},
-  title     = {DIALITE: Discover, Align and Integrate Open Data Tables},
-  booktitle = {{SIGMOD} '23: International Conference on Management of Data, Seattle,
-               WA, USA, June 18 - 23, 2023},
-  publisher = {{ACM}},
-  year      = {2023},
-  doi       = {https://doi.org/10.1145/3555041.3589732},
+@inproceedings{DBLP:conf/sigmod/KhatiwadaSM23,
+  author       = {Aamod Khatiwada and
+                  Roee Shraga and
+                  Ren{\'{e}}e J. Miller},
+  title        = {{DIALITE:} Discover, Align and Integrate Open Data Tables},
+  booktitle    = {Companion of the 2023 International Conference on Management of Data,
+                  {SIGMOD/PODS} 2023, Seattle, WA, USA, June 18-23, 2023},
+  pages        = {187--190},
+  publisher    = {{ACM}},
+  year         = {2023},
+  url          = {https://doi.org/10.1145/3555041.3589732},
+  doi          = {10.1145/3555041.3589732}
 }
 ```
