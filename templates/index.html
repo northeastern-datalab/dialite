@@ -15,10 +15,12 @@
         <div class="row">
         <div class="col-md-2 col-sm-2 col-lg-2"></div>
         <div class="col-md-8 col-sm-8 col-lg-8">
-        <p style="color: red; text-align:center;">Our permanent website is: <a href="http://icde.khoury.northeastern.edu/dialite">http://icde.khoury.northeastern.edu/dialite</a>. The previous address: <a href="#">http://icde.khoury.northeastern.edu:9000</a> may not work as expected.</p>
+        <!-- <p style="color: red; text-align:center;">Our permanent website is: <a href="http://icde.khoury.northeastern.edu/dialite">http://icde.khoury.northeastern.edu/dialite</a>. The previous address: <a href="#">http://icde.khoury.northeastern.edu:9000</a> may not work as expected.</p> -->
         <p style="text-align: justify;"> Abstract: We demonstrate a novel table discovery pipeline called DIALITE that allows users to discover, integrate and analyze open data tables. DIALITE has three main stages. First, it allows users to discover tables from open data platforms using state-of-the-art table discovery techniques. Second, DIALITE integrates the discovered tables to produce an integrated table. Finally, it allows users to analyze the integration result by applying different downstreaming tasks over it. Our pipeline has a flexible architecture such that the user can easily add and compare additional discovery and integration algorithms.</p>
         <p>Related Paper: Aamod Khatiwada, Roee Shraga, and Renée J. Miller. DIALITE: Discover, Align and Integrate Open Data Tables. In SIGMOD-Companion 2023, ACM.
-          <a target="_blank" href="https://doi.org/10.1145/3555041.3589732">https://doi.org/10.1145/3555041.3589732</a></p>
+          <!-- <a target="_blank" href="https://doi.org/10.1145/3555041.3589732">https://doi.org/10.1145/3555041.3589732</a> -->
+           <a target="_blank" href="https://dl.acm.org/doi/abs/10.1145/3555041.3589732">Paper</a> &nbsp; <a target="_blank" href="https://github.com/northeastern-datalab/dialite">Github</a>
+        </p>
       </div>
         <div class="col-md-2 col-sm-2 col-lg-2"></div>
         </div>
@@ -65,9 +67,9 @@
             </div>
             <div class="row form-group">
               <label>Enter a prompt to generate Query table. An example prompt is provided.</label>
-              <textarea rows="3" id="query_prompt" name="query_prompt" class="form-control" style="resize:null" required>Generate a table about soccer players with 10 rows and 10 columns.</textarea>
+              <textarea rows="3" id="query_prompt" name="query_prompt" class="form-control" style="resize:null" required>Generate a table about soccer players with 5 rows and 5 columns.</textarea>
             </div>
-            <div class="row form-group">
+            <div class="row form-group" style="display:none;">
               <label>Enter your OPEN AI API KEY. You can generate one from <a href="https://platform.openai.com/" target="_blank">Open AI website</a>. Note that we do not store it or use it for any other purposes. Still for your safety, you can always deactivate your key after use.</label>
               <input type="text" name="api_key" class="form-control" id="api_key" placeholder="XX-************************************************" required>
             </div>
@@ -105,7 +107,7 @@
               </div>
               <div class="col-md-8">
                 <input type="checkbox" id="santos" name="discovery_method" value="SANTOS" checked> SANTOS (Union Search)&nbsp
-                <input type="checkbox" id="josie" name="discovery_method" value="JOSIE"> LSH Ensemble (Join Search)
+                <input type="checkbox" id="lsh" name="discovery_method" value="LSH"> LSH Ensemble (Join Search)
               </div>
             </div>
             <div class="row form-group">
@@ -132,7 +134,7 @@
                 <label for="threshold">Select threshold:</label>
               </div>
               <div class="col-md-8">
-                <input type="number" class = "form-control" id="number" name="k" min="0.05" step="0.01" value="0.9" required>
+                <input type="number" class = "form-control" id="number" name="threshold" min="0.05" step="0.01" value="0.9" required>
               </div>
             </div>
             <input type="submit" class="btn btn-success form-control" value="Search Tables">
@@ -186,8 +188,59 @@
               <p style="text-align: center; color: blue;">Integrating Tables. This may take longer!!!</p>
             </div>
             <div id="integrated_table_div" style="width: 100%; overflow-x: auto; overflow-y: scroll;"></div>
-            
         </div>
+        <div id="analyze_table_div" class="display_options">
+          <h3 style="text-align:center;">Analyze Tables</h3>
+          <form id = "analyze_table_form" enctype="multipart/form-data">
+            <div class="row form-group">
+              <div class="col-md-4">
+                <label>Select Integrated table 1:</label>
+              </div>
+              <div class="col-md-8">
+                <select id="select_integrated_table1" required class = "form-control" name="select_integrated_table1">
+                  <option disabled selected>--Select First Integrated Table--</option>
+                  {% for tab in integrated_tables %}
+                    <option value="{{tab}}">{{tab}}</option>
+                  {% endfor %}
+                  <!-- <option value="option1">covid19</option>
+                  <option value="option2">mayors</option>
+                  <option value="option3">players</option> -->
+                </select>
+              </div>
+            </div>
+            <div class="row form-group">
+              <div class="col-md-4">
+                <label>Select Integrated table 2:</label>
+              </div>
+              <div class="col-md-8">
+                <select id="select_integrated_table2" required class = "form-control" name="select_integrated_table2">
+                  <option disabled selected>--Select Second Integrated Table--</option>
+                  {% for tab in integrated_tables %}
+                    <option value="{{tab}}">{{tab}}</option>
+                  {% endfor %}
+                  <!-- <option value="option1">covid19</option>
+                  <option value="option2">mayors</option>
+                  <option value="option3">players</option> -->
+                </select>
+              </div>
+            </div>
+            <!-- <input type="submit" class ="form-control btn-success" value="Analyze Tables"> -->
+          </form>
+          <div id="analyzing_table" style="display: none;">
+            <p style="text-align: center; color: blue;">Generating analysis results. This may take longer!!!</p>
+          </div>
+          <div id="current_table1_div" class="row" style="width: 100%; overflow-x: auto; overflow-y: scroll;"></div><br>
+          <!-- <div class="row"> -->
+          <div id="correlation1" class="row" style="width: 100%; overflow-x:auto;"></div>
+          <!-- <div id="stats1" class="col-md-6 col-lg-6 col-sm-6" style="width: 100%; overflow-x: auto;"></div> -->
+          <!-- </div> -->
+          <br>
+          <div id="current_table2_div" class="row" style="width: 100%; overflow-x: auto; overflow-y: scroll;"></div><br>
+          <!-- <div class="row"> -->
+          <div id="correlation2" class="row" style="width: 100%; overflow-x: auto;"></div>
+            <!-- <div id="stats2" class="col-md-6 col-lg-6 col-sm-6" style="width: 100%; overflow-x: auto; "></div> -->
+          <!-- </div>           -->
+      </div>
       <hr>
       {% include 'partials/footer.html' %}
     
@@ -235,7 +288,7 @@
             e.preventDefault();
             var query_prompt = $('#query_prompt').val();
             var generated_query_name = $("#generated_query_name").val();
-            var api_key = $("#api_key").val();
+            var api_key = $("#api_key").val(); 
             if (!query_prompt || !generated_query_name) {
                 alert('Please enter table name and a prompt to generate query table');
                 return;
@@ -284,7 +337,7 @@
             }
           });
 
-          $("#josie").click(function() {
+          $("#lsh").click(function() {
             if ($(this).is(":checked")) {
               $("#threshold_div").show();
             } else {
@@ -325,7 +378,113 @@
               }
             });
           });
+
+          $('#select_integrated_table1').on('change', function() {
+            // Get selected table name
+            let integrated_table = document.getElementById("select_integrated_table1").value;
+            let another_table = document.getElementById("select_integrated_table2").value;
+            if (another_table == "--Select Second Integrated Table--"){
+              another_table = "none";
+            }
+              console.log("another_table: " + another_table);
+            var form_data = new FormData();
+            form_data.append('integrated_table', integrated_table);
+            form_data.append('integrated_table_id', '1');
+            form_data.append('another_table', another_table);
+            // Send Ajax request to Flask route to load table data
+            $.ajax({
+              url: '/show_integrated_table',
+              type: 'POST',
+              contentType: false,
+              processData:false,
+              data: form_data,
+              success: function(response) {
+                // Generate HTML table from DataFrame and replace current table in HTML
+                //console.log(response);
+                $('#current_table1_div').html('<br><p style="text-align:center; color:blue;">Integrated Table 1: '+ integrated_table +'</p><br>'+ response.table);
+                $('#current_table1_div').css("maxHeight", "250px");
+                $("#correlation1").html('<p style="text-align:center; color:blue;"><b>Statistics:</b></p>&nbsp');
+                $("#correlation1").append("<p><b>Null values: </b>"+ response.nan_count + "</p>&nbsp");
+                $("#correlation1").append("<p><b>Total rows: </b>"+ response.num_rows + "</p>&nbsp");
+                $("#correlation1").append("<p><b>Total columns: </b>"+ response.num_cols + "</p>&nbsp");
+                if (response.tdr != "na"){
+                  $("#correlation1").append("<p><b>TDR: </b>"+ response.tdr + "</p>&nbsp");
+                }
+                /*
+                else
+                {
+                  $("#correlation1").append("<p><b>TDR: </b> Another table not selected.</p>&nbsp<br>");
+                }
+                */
+                $('#correlation1').append('<br>' + response.correlations);
+                /*
+                $("#stats1").html('<p style="text-align:center; color:blue;"><b>Statistics:</b></p><br>');
+                $("#stats1").append("<span><b>Null values:</b>"+ response.nan_count + "</span><br>");
+                $("#stats1").append("<span><b>Total rows:</b>"+ response.num_rows + "</span><br>");
+                $("#stats1").append("<span><b>Total columns:</b>"+ response.num_cols + "</span><br>");
+                if (response.tdr != "na"){
+                  $("#stats1").append("<span><b>TDR:</b>"+ response.tdr + "</span>");
+                }
+                else
+                {
+                  $("#stats1").append("<span>Another table not selected.</span>");
+                }
+                */
+              }
+            });
+          });
           
+          $('#select_integrated_table2').on('change', function() {
+            // Get selected table name
+            let integrated_table = document.getElementById("select_integrated_table2").value;
+            let another_table = document.getElementById("select_integrated_table1").value;
+            var form_data = new FormData();
+            form_data.append('integrated_table', integrated_table);
+            form_data.append('another_table', another_table);
+            form_data.append('integrated_table_id', '2');
+            // Send Ajax request to Flask route to load table data
+            $.ajax({
+              url: '/show_integrated_table',
+              type: 'POST',
+              contentType: false,
+              processData:false,
+              data: form_data,
+              success: function(response) {
+                // Generate HTML table from DataFrame and replace current table in HTML
+                //console.log(response.table);
+                $('#current_table2_div').html('<br><p style="text-align:center; color:blue;">Integrated Table 2: '+ integrated_table +'</p><br>'+ response.table);
+                $('#current_table2_div').css("maxHeight", "250px");
+                $("#correlation2").html('<p style="text-align:center; color:blue;"><b>Statistics: </b></p>&nbsp');
+                $("#correlation2").append("<p><b>Null values: </b>"+ response.nan_count + "</p>&nbsp");
+                $("#correlation2").append("<p><b>Total rows: </b>"+ response.num_rows + "</p>&nbsp");
+                $("#correlation2").append("<p><b>Total columns: </b>"+ response.num_cols + "</p>&nbsp");
+                if (response.tdr != "na"){
+                  $("#correlation2").append("<p><b>TDR: </b>"+ response.tdr + "</p>&nbsp<br>");
+                }
+                /*
+                else
+                {
+                  $("#correlation2").append("<p><b>TDR: </b> Another table not selected.</p>&nbsp<br>");
+                }
+                */
+                $('#correlation2').append('<br>' + response.correlations);
+                /*
+                $("#stats2").html('<p style="text-align:center; color:blue;"><b>Statistics:</b></p><br>');
+                $("#stats2").append("<span><b>Null values:</b>"+ response.nan_count + "</span><br>");
+                $("#stats2").append("<span><b>Total rows:</b>"+ response.num_rows + "</span><br>");
+                $("#stats2").append("<span><b>Total columns:</b>"+ response.num_cols + "</span><br>");
+                if (response.tdr != "na"){
+                  $("#stats2").append("<span><b>TDR:</b>"+ response.tdr + "</span>");
+                }
+                else
+                {
+                  $("#stats2").append("<span>Another table not selected.</span>");
+                }
+                */
+              }
+            });
+          });
+
           $('#discover_tables_form').submit(function(e){
             //console.log($('#discover_query').val());
             e.preventDefault();
@@ -339,12 +498,21 @@
               alert('Please select at least one discovery method.');
               return;
             }
+            console.log($("#santos").is(":checked"));
+            console.log($("#lsh").is(":checked"));
             
             // validate k input
-            if ($('#k').val() <= 0) {
+            if (($("#santos").is(":checked") == "true") && ($('#k').val() <= 0)) {
               alert('K must be a positive integers greater than 0.');
               return;
             }
+
+            // validate k input
+            if (($("#lsh").is(":checked") == "true") && ($('#threshold').val() <= 0 || $('#threshold').val() > 1)) {
+              alert('Threshold must be greater than 0 and less than 1.');
+              return;
+            }
+            
             
             // validate query table input
             if ($('#intent_column').val() == null) {
@@ -377,6 +545,7 @@
                       link.href = "/download?file=data/dialite_datalake/" + item;
                       //link.download = "data/dialite_datalake/" + item;
                       //link.download = item;
+                      link.target = "_blank"
                       link.textContent = item;
                       li.appendChild(link);
                       topk_list.appendChild(li);

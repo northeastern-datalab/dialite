@@ -98,4 +98,4 @@ datalake_path = "../data/dialite_datalake/*.csv"
 all_columns, column_dict = collect_columns(datalake_path)
 preprocessed_lshensemble = preprocess_lsh_ensemble(all_columns)
 saveDictionaryAsPickleFile(preprocessed_lshensemble, "hashmap/dialite_preprocessed_lshensemble")
-saveDictionaryAsPickleFile(column_dict, "hashmap/dialite_lsh_ensemble_column_dict.pickle")
+saveDictionaryAsPickleFile(column_dict, "hashmap/dialite_lsh_ensemble_column_dict")
