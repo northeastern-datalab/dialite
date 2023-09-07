@@ -1,6 +1,6 @@
 # DIALITE: Discover, Align and Integrate Open Data Tables 
 
-This repository contains the implementation codes for our demo paper: DIALITE, accepted for [SIGMOD 2023](https://2023.sigmod.org/). 
+This repository contains the implementation codes for our demo paper: DIALITE, presented at [SIGMOD 2023](https://2023.sigmod.org/). 
 
 Authors: Aamod Khatiwada, Roee Shraga and Renée J. Miller
 
